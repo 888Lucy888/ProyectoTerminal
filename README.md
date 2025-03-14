@@ -101,4 +101,4 @@ Aplicación web en **React** con gráficos en **Recharts** o **Apache ECharts** 
 ### 🚀 ¿Cómo Contribuir?
 1. Clona este repositorio:
    ```sh
-   git clone https://github.com/tu-repo.git
+   git clone https://github.com/888Lucy888/ProyectoTerminal
