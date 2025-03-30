@@ -1,0 +1,4 @@
+VERTEXAI_PROJECT=psa-sabia-llm-dv
+VERTEXAI_LOCATION=us-east5
+AIDER_MODEL=vertex_ai/claude-3-5-sonnet@20240620
+AIDER_WEAK_MODEL=gemini-flash-2.0-001
