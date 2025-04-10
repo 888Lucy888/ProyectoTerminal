@@ -11,6 +11,6 @@ lucyenv
 .aider.chat.history.md
 WITHAMAZON
 iiot-dashboard/node_modules
-aider_chat
+aider_chat/
 .aider.tags.cache.v3
 .aider.tags.cache.v4
