@@ -14,3 +14,8 @@ iiot-dashboard/node_modules
 aider_chat/
 .aider.tags.cache.v3
 .aider.tags.cache.v4
+aider_chat_l/
+packageL.json
+promptL.txt
+tall git-filter-repo
+.envL
