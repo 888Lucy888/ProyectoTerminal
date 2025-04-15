@@ -1,5 +1,19 @@
 html,
-body,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #F2F2F2;
+  /* Default light mode background */
+}
+
+html.dark,
+body.dark {
+  background-color: #000000;
+  /* Dark mode background */
+}
+
 #root {
   height: 100%;
   margin: 0;
@@ -9,6 +23,10 @@ body,
 
 .App {
   text-align: center;
+}
+
+.padding {
+  padding: 0.5%;
 }
 
 .dashboard-container {
@@ -189,9 +207,7 @@ body,
   /* Aligns the LineChart to the left */
   align-items: center;
   /* Vertically centers the LineChart */
-  margin-left: 16px;
-  margin-right: 20%;
-  margin-top: -20%;
+  margin-top: -15%;
   /* Adds a small gap from the left */
   width: auto;
   /* Ensures the width adjusts to the content */
@@ -203,7 +219,6 @@ body,
   /* Aligns the LineChart to the left */
   align-items: center;
   /* Vertically centers the LineChart */
-  margin-right: 25%;
 
 }
 
@@ -236,7 +251,6 @@ body,
   /* Position the graph relative to the container */
   bottom: -40%;
   /* Align the graph to the bottom */
-  left: -28%;
   /* Align the graph to the left */
   width: 100%;
   /* Make the graph span the full width of the container */
@@ -251,6 +265,6 @@ body,
   /* Make the container a positioning context */
   width: 100%;
   height: 300px;
-  margin-top: 2%;
+  margin: 5%;
   /* Set a fixed height for the container */
 }

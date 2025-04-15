@@ -16,6 +16,8 @@ export interface Props {
     "variant"?: 'DESKTOP' | 'TABLET' | 'Variant 3' | 'Variant 4' | 'Variant 5' | 'NOGRAPHS'
     "text"?: string
     "title"?: string
+    "info"?: string
+    "date"?: string | Date
 }
 
 const LineChartFramerComponent = (props: Props) => any

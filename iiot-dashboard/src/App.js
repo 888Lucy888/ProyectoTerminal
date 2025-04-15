@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Main from './components/Main';
 import SVG from './components/SVG';
@@ -58,7 +58,27 @@ const darkTheme = createTheme({
 });
 
 export default function App() {
-  // Define variables or state for the data and subdata
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check for the browser's theme preference
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDarkMode(mediaQuery.matches);
+
+    // Add or remove the 'dark' class on the html element
+    document.documentElement.classList.toggle('dark', mediaQuery.matches);
+
+    // Add an event listener to detect changes in the theme
+    const handleChange = (e) => {
+      setIsDarkMode(e.matches);
+      document.documentElement.classList.toggle('dark', e.matches);
+    };
+    mediaQuery.addEventListener('change', handleChange);
+
+    // Cleanup the event listener on unmount
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
   const [gaugeData, setGaugeData] = useState([
     {
       data: 3,
@@ -242,34 +262,41 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div
+      className={`flex flex-col min-h-screen ${isDarkMode ? 'dark' : ''}`}
+      style={{
+        backgroundColor: isDarkMode ? '#000000' : '#F2F2F2', // Set background color based on theme
+      }}
+    >
       {/* Top Navbar */}
-      <div className="navigation-bar-wrapper">
-        <NavigationBar />
+      <div className={`navigation-bar-wrapper ${isDarkMode ? 'dark' : ''}`}>
+        <NavigationBar style={{ width: '100%' }} />
       </div>
 
       {/* Main content with left menu and right panel */}
-      <div className="flex flex-1">
+      <div className={`flex flex-1 padding ${isDarkMode ? 'dark' : ''}`}>
         {/* Left Menu */}
-        <div className="w-64 bg-gray-900 p-4 flex-shrink-0">
-          <LeftMenu />
+        <div className={`w-64 bg-gray-900 p-4 padding flex-shrink-0 ${isDarkMode ? 'dark' : ''}`}>
+          <LeftMenu style={{ width: '100%' }} />
         </div>
 
         {/* Right content */}
-        <div className="flex-1 p-6 overflow-auto">
-          <div className="line-bar-container">
-            <LineBar variant="Good" />
+        <div className={`flex-1 p-6 overflow-auto padding ${isDarkMode ? 'dark' : ''}`}>
+          <div className="line-bar-container padding">
+            <LineBar variant="Good" style={{ width: '100%' }} className={`${isDarkMode ? 'dark' : ''}`}/>
           </div>
-          <Panel variant="NOGRAPHS" />
+          <div className="line-bar-container padding">
+          <Panel variant="NOGRAPHS" style={{ width: '100%' }} />
+          </div>
           <div className="flex flex-row justify-between items-center gap-2">
-            <div className="gauge-container">
+            <div className="gauge-container" style={{ width: '100%' }}>
               {gaugeData.map((gauge, index) => {
-                // Calculate the percentage value (if applicable)
-                const percentage = gauge.data * 10; // Example: Scale `data` to a percentage
+                const percentage = gauge.data * 10;
                 const variant = getVariant(percentage);
 
                 return (
                   <GaugeChartFramerComponent
+                    style={{ width: '100%' }}
                     key={index}
                     data={`${percentage}%`}
                     title={gauge.title}
@@ -293,28 +320,29 @@ export default function App() {
           <div className="flex flex-col mt-4 items-center justify-center p-8">
             <div className="line-chart-wrapper">
               <div className="line-chart-container">
-                <LineChart variant="NOGRAPHS" />
+                <LineChart variant="NOGRAPHS" style={{ width: '100%' }} />
                 <div className="line-chart-wrapper-graph">
                   <ReactApexChart
                     options={lineChartData.options}
                     series={lineChartData.series}
                     type="line"
-                    height={300} // Adjust height as needed
+                    style={{ width: '100%' }}
+                    height={300}
                   />
                 </div>
               </div>
             </div>
             <div className="time-chart-wrapper">
-              <div className="time-chart-container">
-                <TimelineChart variant="NOGRAPH" />
+              <div className="line-chart-container">
+                <TimelineChart variant="NOGRAPH" style={{ width: '100%' }} />
               </div>
-              {/* Apex State Timeline */}
               <div className="time-chart-wrapper-graph">
                 <ReactApexChart
                   options={stateTimeline.options}
                   series={stateTimeline.series}
                   type="rangeBar"
-                  height={300} // Adjust height to fit multiple rows
+                  style={{ width: '100%' }}
+                  height={300}
                 />
               </div>
             </div>

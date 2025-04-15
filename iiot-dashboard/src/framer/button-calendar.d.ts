@@ -13,8 +13,10 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'Live' | 'Range'
+    "variant"?: 'Live' | 'Range' | 'NOCALENDAR'
     "fontSize"?: number
+    "date"?: string | Date
+    "onClick"?: Function
 }
 
 const ButtonCalendarFramerComponent = (props: Props) => any

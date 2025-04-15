@@ -26,6 +26,7 @@ export interface Props {
     "time7"?: string
     "time8"?: string
     "time9"?: string
+    "date"?: string | Date
 }
 
 const TimelineChartFramerComponent = (props: Props) => any

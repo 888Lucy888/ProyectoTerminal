@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-5FTUJNKV.js";
+} from "./chunks/chunk-SBVXWYNT.js";
 
 // virtual:icon-calendar
 import { Fragment } from "react";

@@ -14,6 +14,7 @@ export interface Props {
     height?: any
     layoutId?: string
     "variant"?: 'Variant 1' | 'Variant 2'
+    "click"?: Function
 }
 
 const IconCalendarFramerComponent = (props: Props) => any

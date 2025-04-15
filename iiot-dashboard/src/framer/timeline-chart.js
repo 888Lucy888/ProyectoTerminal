@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-GL2BEDKR.js";
+} from "./chunks/chunk-33IQSVUA.js";
 import "./chunks/chunk-3EPZWXLT.js";
 
 // virtual:timeline-chart

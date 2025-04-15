@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-FULCWZZU.js";
+} from "./chunks/chunk-FUFDJHP4.js";
 import "./chunks/chunk-ZC6P7TRE.js";
 
 // virtual:gauge-chart
