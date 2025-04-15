@@ -20,6 +20,7 @@ export interface Props {
     "color"?: string
     "fontSize"?: number
     "fontSize2"?: number
+    "info"?: string
 }
 
 const GaugeChartFramerComponent = (props: Props) => any

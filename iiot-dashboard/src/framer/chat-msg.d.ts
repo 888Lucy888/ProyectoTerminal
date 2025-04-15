@@ -13,15 +13,17 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "color"?: string
+    "variant"?: 'Desktop' | 'Desktop Open' | 'Tablet Open' | 'Mobile Open'
     "click"?: Function
+    "click2"?: Function
+    "text"?: string
 }
 
-const BarFromTimelineFramerComponent = (props: Props) => any
+const ChatMsgFramerComponent = (props: Props) => any
 
 type VariantsMap = Partial<Record<UnframerBreakpoint, Props['variant']>> & { base: Props['variant'] }
 
-BarFromTimelineFramerComponent.Responsive = (props: Omit<Props, 'variant'> & {variants?: VariantsMap}) => any
+ChatMsgFramerComponent.Responsive = (props: Omit<Props, 'variant'> & {variants?: VariantsMap}) => any
 
-export default BarFromTimelineFramerComponent
+export default ChatMsgFramerComponent
 

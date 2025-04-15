@@ -31,10 +31,21 @@ body,
 }
 
 .gauge-container {
-  height: 200px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  /* Align gauges in a row */
+  justify-content: space-between;
+  /* Distribute gauges evenly */
   align-items: center;
+  /* Align gauges vertically */
+  margin-top: 16px;
+  gap: 16px;
+  /* Optional: Add some space above the gauges */
+}
+
+.gauge-container>*:first-child {
+  margin-left: 20px;
+  /* Add a bigger gap on the left for the first gauge */
 }
 
 .time-graph-container {
@@ -125,4 +136,121 @@ body,
 
 .z-50 {
   z-index: 50;
+}
+
+.line-chart-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-left: 16px;
+  /* Adds a small gap from the left */
+  padding: 16px;
+  /* Adds padding around the LineChart */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.line-chart-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-left: 16px;
+  /* Adds a small gap from the left */
+  padding: 16px;
+  /* Adds padding around the LineChart */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.time-chart-wrapper {
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-left: 16px;
+  /* Adds a small gap from the left */
+  padding: 16px;
+  margin-top: 10%;
+  /* Adds padding around the LineChart */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.time-chart-wrapper-graph {
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-left: 16px;
+  margin-right: 20%;
+  margin-top: -20%;
+  /* Adds a small gap from the left */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.line-chart-wrapper-graph {
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-right: 25%;
+
+}
+
+.navigation-bar-wrapper {
+  width: 100%;
+  /* Make the navigation bar span the full width */
+  display: flex;
+  /* Enable flexbox for centering */
+  justify-content: center;
+  /* Center horizontally */
+  align-items: center;
+  /* Center vertically (if needed) */
+  position: relative;
+  /* Ensure it stays in the normal document flow */
+  z-index: 10;
+  /* Optional: Ensure it stays above other elements */
+}
+
+.line-chart-container {
+  position: relative;
+  /* Make the container a positioning context */
+  width: 100%;
+  height: 300px;
+  margin-top: 2%;
+  /* Set a fixed height for the container */
+}
+
+.line-graph-overlay {
+  position: absolute;
+  /* Position the graph relative to the container */
+  bottom: -40%;
+  /* Align the graph to the bottom */
+  left: -28%;
+  /* Align the graph to the left */
+  width: 100%;
+  /* Make the graph span the full width of the container */
+  height: 100%;
+  /* Make the graph span the full height of the container */
+  pointer-events: none;
+  /* Ensure the overlay doesn't block interactions */
+}
+
+.time-chart-container {
+  position: relative;
+  /* Make the container a positioning context */
+  width: 100%;
+  height: 300px;
+  margin-top: 2%;
+  /* Set a fixed height for the container */
 }

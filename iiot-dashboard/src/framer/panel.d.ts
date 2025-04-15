@@ -13,7 +13,7 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'DESKTOP' | 'DESKTOP DATOS' | 'DESKTOP ALERTAS' | 'TABLET' | 'PHONE' | 'TABLET DATOS' | 'TABLET ALERTAS' | 'PHONE DATOS' | 'PHONE ALERTAS'
+    "variant"?: 'DESKTOP' | 'DESKTOP DATOS' | 'DESKTOP ALERTAS' | 'TABLET' | 'PHONE' | 'TABLET DATOS' | 'TABLET ALERTAS' | 'PHONE DATOS' | 'PHONE ALERTAS' | 'NOGRAPHS' | 'NOGRAPHDATA' | 'NOGRAPHALERT'
 }
 
 const PanelFramerComponent = (props: Props) => any

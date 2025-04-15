@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-YOBS6IQE.js";
+} from "./chunks/chunk-3EPZWXLT.js";
 
 // virtual:bar-from-timeline
 import { Fragment } from "react";

@@ -1065,7 +1065,7 @@ NavigationContainer
     font-weight: 400;
 }
 
-/* used by chatbot-button.js, left-menu-desktop.js, left-menu-dropdown.js, left-menu-item.js, line-menu-02.js, line-menu-mobile-and-tablet.js, navigation-bar.js, search-bar-mobile.js, search-bar.js */
+/* used by chat-msg.js, chatbot-button.js, left-menu-desktop.js, left-menu-dropdown.js, left-menu-item.js, line-menu-02.js, line-menu-mobile-and-tablet.js, navigation-bar.js, search-bar-mobile.js, search-bar.js, user-msg.js */
 
 @font-face {
     font-family: 'Manrope'; 

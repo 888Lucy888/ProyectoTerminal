@@ -16,6 +16,10 @@ export interface Props {
     "fontSize"?: number
     "title"?: string
     "padding"?: undefined
+    "onClick"?: Function
+    "option1"?: string
+    "option2"?: string
+    "option3"?: string
 }
 
 const StationDropdownFramerComponent = (props: Props) => any

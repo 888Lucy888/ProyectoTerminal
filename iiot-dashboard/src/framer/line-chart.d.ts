@@ -13,7 +13,9 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'DESKTOP' | 'TABLET' | 'Variant 3'
+    "variant"?: 'DESKTOP' | 'TABLET' | 'Variant 3' | 'Variant 4' | 'Variant 5' | 'NOGRAPHS'
+    "text"?: string
+    "title"?: string
 }
 
 const LineChartFramerComponent = (props: Props) => any

@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-RYJSK3TT.js";
+} from "./chunks/chunk-4ARG4HPX.js";
 import "./chunks/chunk-K5HAYHV7.js";
 
 // virtual:shift-dropdown

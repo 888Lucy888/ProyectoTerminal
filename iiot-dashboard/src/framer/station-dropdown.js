@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-NX2CGRAI.js";
+} from "./chunks/chunk-DXLWIGY2.js";
 import "./chunks/chunk-K5HAYHV7.js";
 
 // virtual:station-dropdown

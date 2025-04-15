@@ -6,14 +6,14 @@ import {
   stdin_default as stdin_default7
 } from "./chunks/chunk-KKIHFEYO.js";
 import {
+  stdin_default as stdin_default6
+} from "./chunks/chunk-SBJASHFN.js";
+import {
   stdin_default as stdin_default4
 } from "./chunks/chunk-VA2MSWEO.js";
 import {
   stdin_default as stdin_default5
 } from "./chunks/chunk-VJQRJ26Z.js";
-import {
-  stdin_default as stdin_default6
-} from "./chunks/chunk-SBJASHFN.js";
 import {
   stdin_default as stdin_default3
 } from "./chunks/chunk-75K7VAKA.js";

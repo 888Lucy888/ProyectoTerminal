@@ -13,7 +13,7 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'DESKTOP TABLERO' | 'DESKTOP DATOS' | 'DESKTOP ALERTAS' | 'TABLET TABLERO' | 'PHONE TABLERO' | 'PHONE DATOS' | 'PHONE ALERTAS' | 'TABLET DATOS' | 'TABLET ALERTAS'
+    "variant"?: 'DESKTOP TABLERO' | 'DESKTOP DATOS' | 'DESKTOP ALERTAS' | 'TABLET TABLERO' | 'PHONE TABLERO' | 'PHONE DATOS' | 'PHONE ALERTAS' | 'TABLET DATOS' | 'TABLET ALERTAS' | 'Variant 10' | 'NO GRAPHS'
     "radius"?: undefined
 }
 

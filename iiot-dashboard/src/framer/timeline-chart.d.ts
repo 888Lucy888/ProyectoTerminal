@@ -13,7 +13,19 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'DESKTOP' | 'TABLET'
+    "variant"?: 'DESKTOP' | 'TABLET' | 'Variant 3' | 'NOGRAPH'
+    "text"?: string
+    "title"?: string
+    "green"?: string
+    "time1"?: string
+    "time2"?: string
+    "time3"?: string
+    "time4"?: string
+    "time5"?: string
+    "time6"?: string
+    "time7"?: string
+    "time8"?: string
+    "time9"?: string
 }
 
 const TimelineChartFramerComponent = (props: Props) => any

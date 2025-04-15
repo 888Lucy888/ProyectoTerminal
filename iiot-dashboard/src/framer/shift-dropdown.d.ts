@@ -16,6 +16,10 @@ export interface Props {
     "padding"?: undefined
     "title"?: string
     "fontSize"?: number
+    "onClick"?: Function
+    "turno1"?: string
+    "turno2"?: string
+    "turno3"?: string
 }
 
 const ShiftDropdownFramerComponent = (props: Props) => any

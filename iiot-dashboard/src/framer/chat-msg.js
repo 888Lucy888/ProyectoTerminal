@@ -4,22 +4,18 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-EJCRLMLP.js";
-import "./chunks/chunk-PFVGTMIH.js";
-import "./chunks/chunk-6TLROV7Q.js";
-import "./chunks/chunk-ZC6P7TRE.js";
-import "./chunks/chunk-UDMIPIOD.js";
-import "./chunks/chunk-BTSBQWPZ.js";
+} from "./chunks/chunk-7XYI54FB.js";
 
-// virtual:line-chart
+// virtual:chat-msg
 import { Fragment } from "react";
 import { ContextProviders } from "unframer";
 import { WithFramerBreakpoints } from "unframer";
 import { jsx } from "react/jsx-runtime";
 var locales = [];
 var defaultResponsiveVariants = {
-  "base": "rn0P1IxcL",
-  "md": "yKXmInGDt"
+  "base": "sgguTK11v",
+  "sm": "EyLgBbJzq",
+  "md": "RtyQnoSUj"
 };
 stdin_default.Responsive = ({ locale, ...rest }) => {
   return /* @__PURE__ */ jsx(

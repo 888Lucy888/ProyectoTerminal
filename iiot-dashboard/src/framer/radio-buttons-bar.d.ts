@@ -14,6 +14,11 @@ export interface Props {
     height?: any
     layoutId?: string
     "variant"?: 'OEE' | 'Calidad' | 'Desempeño' | 'Disponibilidad'
+    "onClick"?: Function
+    "setDisponibilidad"?: Function
+    "setDesempeno"?: Function
+    "setCalidad"?: Function
+    "setOEE"?: Function
 }
 
 const RadioButtonsBarFramerComponent = (props: Props) => any
