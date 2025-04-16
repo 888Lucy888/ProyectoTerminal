@@ -19,6 +19,10 @@ import LeftMenu from './framer/left-menu-desktop';
 import ChatbotButton from './framer/chatbot-button';
 import LineChart from './framer/line-chart';
 import TimelineChart from './framer/timeline-chart';
+import StationDropdown from './framer/station-dropdown';
+import ShiftDropdown from './framer/shift-dropdown';
+import ButtonCalendar from './framer/button-calendar';
+import ReturnDateButton from './framer/return-date-button';
 // Configure AWS Amplify
 import { Amplify } from '@aws-amplify/core';
 import ReactApexChart from "react-apexcharts";
@@ -59,6 +63,13 @@ const darkTheme = createTheme({
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [stationTitle, setStationTitle] = useState('Etiquetado'); // State for StationDropdown title
+  const [shiftTitle, setShiftTitle] = useState('Turno matutino'); // State for ShiftDropdown title
+  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString('es-MX', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).split('/').reverse().join('-')); // State for ButtonCalendar date
 
   useEffect(() => {
     // Check for the browser's theme preference
@@ -265,7 +276,7 @@ export default function App() {
     <div
       className={`flex flex-col min-h-screen ${isDarkMode ? 'dark' : ''}`}
       style={{
-        backgroundColor: isDarkMode ? '#000000' : '#F2F2F2', // Set background color based on theme
+        backgroundColor: isDarkMode ? '#000000' : '#F2F2F2',
       }}
     >
       {/* Top Navbar */}
@@ -273,7 +284,7 @@ export default function App() {
         <NavigationBar style={{ width: '100%' }} />
       </div>
 
-      {/* Main content with left menu and right panel */}
+      {/* Main content */}
       <div className={`flex flex-1 padding ${isDarkMode ? 'dark' : ''}`}>
         {/* Left Menu */}
         <div className={`w-64 bg-gray-900 p-4 padding flex-shrink-0 ${isDarkMode ? 'dark' : ''}`}>
@@ -285,8 +296,66 @@ export default function App() {
           <div className="line-bar-container padding">
             <LineBar variant="Good" style={{ width: '100%' }} className={`${isDarkMode ? 'dark' : ''}`}/>
           </div>
-          <div className="line-bar-container padding">
+          <div className="line-bar-container padding" >
           <Panel variant="NOGRAPHS" style={{ width: '100%' }} />
+          <div className="row-container">
+            {/* StationDropdown */}
+            <div className="row-item">
+              <StationDropdown
+                title={stationTitle} // Dynamically set the title
+                onClick={(event) => {
+                  const target = event.target; // Get the target element of the event
+                  if (target) {
+                    console.log("StationDropdown clicked");
+                    console.log("Target innerText:", target.innerText); // Print the inner text of the target
+                    setStationTitle(target.innerText); // Update the title dynamically
+                  } else {
+                    console.log("StationDropdown clicked, no target found");
+                  }
+                }}
+              />
+            </div>
+            <div className="row-item dropdown-group">
+              <ShiftDropdown
+                title={shiftTitle} // Dynamically set the title
+                shifts={["Turno 1", "Turno 2", "Turno 3"]}
+                onClick={(event) => {
+                    const target = event.target;
+                    if (target) {
+                      console.log("ShiftDropdown clicked");
+                      console.log("Target innerText:", target.innerText);
+                    setShiftTitle(target.innerText); // Update the title dynamically
+                    } else {
+                      console.log("ShiftDropdown clicked, no target found");
+                    }
+                  }}
+              />
+            </div>
+
+            {/* Date group */}
+            <div className="row-item date-group">
+              <ButtonCalendar
+                date={selectedDate} // Dynamically set the date
+                onDateSelect={(date) => {
+                  console.log(`Selected date: ${date}`);
+                  setSelectedDate(date); // Update the selected date
+                }}
+              />
+            </div>
+            <div className="row-item">
+              <ReturnDateButton
+                onClick={() => {
+                  const today = new Date().toLocaleDateString('es-MX', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  }).split('/').reverse().join('-'); // Format as YYYY-MM-DD
+                  console.log(`ReturnDateButton clicked, setting date to today (Mexico time): ${today}`);
+                  setSelectedDate(today); // Update the selected date to today's date in Mexico time
+                }}
+              />
+            </div>
+          </div>
           </div>
           <div className="flex flex-row justify-between items-center gap-2">
             <div className="gauge-container" style={{ width: '100%' }}>
@@ -320,7 +389,19 @@ export default function App() {
           <div className="flex flex-col mt-4 items-center justify-center p-8">
             <div className="line-chart-wrapper">
               <div className="line-chart-container">
-                <LineChart variant="NOGRAPHS" style={{ width: '100%' }} />
+                <LineChart
+                  variant="NOGRAPHS"
+                  style={{ width: '100%' }}
+                  onClick={(event) => {
+                    const target = event.target; // Get the target element of the event
+                    if (target) {
+                      console.log("LineChart clicked");
+                      console.log("Target innerText:", target.innerText); // Print the inner text of the target
+                    } else {
+                      console.log("LineChart clicked, no target found");
+                    }
+                  }}
+                />
                 <div className="line-chart-wrapper-graph">
                   <ReactApexChart
                     options={lineChartData.options}

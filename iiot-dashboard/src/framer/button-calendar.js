@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-ABCCXEQQ.js";
+} from "./chunks/chunk-GIW62UBX.js";
 import "./chunks/chunk-55D774EJ.js";
 import "./chunks/chunk-YPXXIIOI.js";
 import "./chunks/chunk-SBVXWYNT.js";

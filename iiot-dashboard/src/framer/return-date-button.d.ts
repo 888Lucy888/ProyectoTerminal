@@ -14,6 +14,7 @@ export interface Props {
     height?: any
     layoutId?: string
     "variant"?: 'Active' | 'Unactive'
+    "click"?: Function
 }
 
 const ReturnDateButtonFramerComponent = (props: Props) => any

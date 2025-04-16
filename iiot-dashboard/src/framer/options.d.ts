@@ -14,6 +14,7 @@ export interface Props {
     height?: any
     layoutId?: string
     "variant"?: 'DESKTOP' | 'TABLET' | 'PHONE'
+    "onClick"?: Function
 }
 
 const OptionsFramerComponent = (props: Props) => any

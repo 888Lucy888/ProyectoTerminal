@@ -4,7 +4,7 @@
 "use client";
 import {
   stdin_default
-} from "./chunks/chunk-UDMIPIOD.js";
+} from "./chunks/chunk-IV6B2NPJ.js";
 import "./chunks/chunk-BTSBQWPZ.js";
 
 // virtual:radio-selector

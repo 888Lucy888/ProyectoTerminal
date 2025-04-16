@@ -268,3 +268,26 @@ body.dark {
   margin: 5%;
   /* Set a fixed height for the container */
 }
+
+.row-container {
+  display: flex;
+  align-items: right;
+  /* Default spacing between all items */
+  width: 100%;
+  padding: 1%;
+  box-sizing: border-box;
+}
+
+.row-item {
+  margin-inline-start: 1%;
+}
+
+.row-item.dropdown-group {
+  margin-inline-end: 3%;
+  /* Reduced spacing for dropdown components */
+}
+
+.row-item.date-group {
+  margin-inline-start: 25%;
+  /* Reduced spacing for date components */
+}

@@ -15,6 +15,7 @@ export interface Props {
     layoutId?: string
     "variant"?: 'Desktop' | 'Desktop Open' | 'Tablet' | 'Tablet Open' | 'Mobile' | 'Mobile Open' | 'Variant 7'
     "onClick"?: Function
+    "text"?: string
 }
 
 const ChatbotButtonFramerComponent = (props: Props) => any
