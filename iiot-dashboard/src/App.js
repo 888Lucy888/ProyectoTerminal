@@ -27,6 +27,8 @@ import ReturnDateButton from './framer/return-date-button';
 import { Amplify } from '@aws-amplify/core';
 import ReactApexChart from "react-apexcharts";
 import Text from './../node_modules/@svgdotjs/svg.js/src/elements/Text';
+import { CircularProgressbar } from "react-circular-progressbar";
+import { fetchOEEData, processOEEData } from './utils/oeeUtils'; // Move fetch and process logic to a utility file
 
 Amplify.configure({
   API: {
@@ -61,6 +63,38 @@ const darkTheme = createTheme({
   },
 });
 
+const StateTimeline = ({ data }) => {
+  const options = {
+    chart: { type: "rangeBar" },
+    plotOptions: { bar: { horizontal: true } },
+    xaxis: { type: "datetime" },
+    colors: ["#28a745", "#ffc107", "#dc3545"],
+  };
+
+  return <ReactApexChart options={options} series={data.series} type="rangeBar" height={100} />;
+};
+
+const OEEVisualization = ({ oeeData, availabilityReal, performanceReal, qualityReal, oeeRatio }) => {
+  return (
+    <div>
+      <h1>OEE Dashboard</h1>
+      {oeeData && (
+        <>
+          <StateTimeline data={oeeData.stateTimeline} />
+          <div>
+            <h2>Metrics</h2>
+            <p>Availability: {availabilityReal}</p>
+            <p>Performance: {performanceReal}</p>
+            <p>Quality: {qualityReal}</p>
+            <p>OEE Ratio: {(oeeRatio * 100).toFixed(2)}%</p>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [stationTitle, setStationTitle] = useState('Etiquetado'); // State for StationDropdown title
@@ -70,6 +104,199 @@ export default function App() {
     month: '2-digit',
     day: '2-digit',
   }).split('/').reverse().join('-')); // State for ButtonCalendar date
+
+  const [oeeData, setOEEData] = useState(null);
+  const [availabilityReal, setAvailabilityReal] = useState(0);
+  const [performanceReal, setPerformanceReal] = useState(0);
+  const [qualityReal, setQualityReal] = useState(0);
+  const [oeeRatio, setOEERatio] = useState(0);
+
+  const [availabilityGaugeData, setAvailabilityGaugeData] = useState(0);
+  const [performanceGaugeData, setPerformanceGaugeData] = useState(0);
+  const [qualityGaugeData, setQualityGaugeData] = useState(0);
+  const [oeeGaugeData, setOeeGaugeData] = useState(0);
+
+  const [timestamps, setTimestamps] = useState([]);
+  const [availabilityGoal, setAvailabilityGoal] = useState([]);
+  const [performanceGoal, setPerformanceGoal] = useState([]);
+  const [oeeGaugeDataArray, setOeeGaugeDataArray] = useState([]);
+  const [availabilityGaugeDataArray, setAvailabilityGaugeDataArray] = useState([]);
+  const [performanceGaugeDataArray, setPerformanceGaugeDataArray] = useState([]);
+  const [qualityGaugeDataArray, setQualityGaugeDataArray] = useState([]);
+
+  const fetchAndProcessData = async () => {
+    try {
+      // Fetch data from the API
+      const data = await fetchOEEData(1, 1, "2025-04-10 00:00:00", "2025-04-10 23:59:00");
+      console.log("Fetched OEE Data:", data);
+
+      // Validate the structure of the data
+      if (!data || !data.performance || !data.quality || !data.availability) {
+        console.error("Invalid data structure:", data);
+        return;
+      }
+
+      // === Extract data from the new format ===
+      const timestampsRaw = data.timestamps;
+      const timestamps = timestampsRaw.map((t) => {
+        const parsedDate = new Date(t);
+        if (isNaN(parsedDate)) {
+          console.error(`Invalid date format: ${t}`);
+          return null;
+        }
+        return parsedDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      }).filter((t) => t !== null);
+
+      const minutesGoal = data.availability.minutes_goal || 1; // Avoid division by zero
+      const productionMeasures = data.performance.production_measures.map((p) => parseInt(p, 10));
+      const productionGoal = data.performance.production_goal || 1; // Avoid division by zero
+      const qualityMeasures = data.quality.quality_measures.map((q) => parseInt(q, 10));
+      const statusLimit = parseFloat(data.status.status_limit);
+
+      // === Initialize accumulators ===
+      let availability = 0;
+      let performance = 0;
+      let quality = 0;
+
+      const availabilityReal = [];
+      const performanceReal = [];
+      const qualityReal = [];
+
+      // === Calculate accumulated values minute by minute ===
+      for (let i = 0; i < productionMeasures.length; i++) {
+        if (productionMeasures[i] > 0) {
+          availability++;
+        }
+        performance += productionMeasures[i];
+        quality += qualityMeasures[i];
+
+        availabilityReal.push(availability);
+        performanceReal.push(performance);
+        qualityReal.push(quality);
+      }
+
+      // === Calculate goals and metrics ===
+      const availabilityGoal = Array.from({ length: minutesGoal }, (_, i) => i + 1);
+      const productionGoalPerMinute = productionGoal / minutesGoal;
+      const performanceGoal = availabilityReal.map((a) =>
+        Math.floor(productionGoalPerMinute * a)
+      );
+
+      const availabilityRatio = availabilityReal.map((a, i) =>
+        availabilityGoal[i] ? a / availabilityGoal[i] : 0
+      );
+      const performanceRatio = performanceReal.map((p, i) =>
+        performanceGoal[i] ? p / performanceGoal[i] : 0
+      );
+      const qualityRatio = qualityReal.map((q, i) =>
+        performanceReal[i] ? q / performanceReal[i] : 0
+      );
+      const oeeRatio = availabilityRatio.map((a, i) =>
+        a * performanceRatio[i] * qualityRatio[i]
+      );
+
+      // === Calculate relative states ===
+      const statesRelative = productionMeasures.map((p) =>
+        productionGoalPerMinute ? p / productionGoalPerMinute : 0
+      );
+
+      // === Calculate categorical states ===
+      const states = statesRelative.map((r) => {
+        if (r >= statusLimit) return "G";
+        if (r > 0) return "Y";
+        return "R";
+      });
+
+      // === Prepare data for ReactApexChart ===
+      const availabilityChartData = availabilityReal.map((value, index) => ({
+        x: timestamps[index],
+        y: value,
+      }));
+
+      const performanceChartData = performanceReal.map((value, index) => ({
+        x: timestamps[index],
+        y: value,
+      }));
+
+      const qualityChartData = qualityReal.map((value, index) => ({
+        x: timestamps[index],
+        y: value,
+      }));
+
+      const oeeChartData = oeeRatio.map((value, index) => ({
+        x: timestamps[index],
+        y: value * 100, // Convert to percentage
+      }));
+
+      // === Store processed data in state ===
+      setTimestamps(timestamps);
+      setAvailabilityGoal(availabilityGoal);
+      setPerformanceGoal(performanceGoal);
+      setQualityGaugeDataArray(qualityReal);
+      setOeeGaugeDataArray(oeeRatio);
+      setAvailabilityGaugeDataArray(availabilityReal);
+      setPerformanceGaugeDataArray(performanceReal);
+
+      // Update gauge data
+      setAvailabilityGaugeData(availabilityReal[availabilityReal.length - 1]);
+      setPerformanceGaugeData(performanceReal[performanceReal.length - 1]);
+      setQualityGaugeData(qualityReal[qualityReal.length - 1]);
+      setOeeGaugeData(oeeRatio[oeeRatio.length - 1]);
+
+      // Log processed chart data
+      console.log("Chart Data:", {
+        availabilityChartData,
+        performanceChartData,
+        qualityChartData,
+        oeeChartData,
+      });
+
+      // === Update gauge data ===
+      setGaugeData([
+        {
+          data: (availabilityRatio[availabilityRatio.length - 1] * 100).toFixed(0),
+          title: "Disponibilidad",
+          subdata: {
+            operating: availabilityReal[availabilityReal.length - 1],
+            planned: availabilityGoal[availabilityGoal.length - 1],
+          },
+          info: "La gráfica de Disponibilidad muestra la proporción entre el tiempo operado (en minutos) y el tiempo planificado para la producción.",
+        },
+        {
+          data: (performanceRatio[performanceRatio.length - 1] * 100).toFixed(0),
+          title: "Desempeño",
+          subdata: {
+            produced: performanceReal[performanceReal.length - 1],
+            planned: performanceGoal[performanceGoal.length - 1],
+          },
+          info: "La gráfica de Desempeño representa la relación entre el número de piezas producidas y el número de piezas planificadas.",
+        },
+        {
+          data: (qualityRatio[qualityRatio.length - 1] * 100).toFixed(0),
+          title: "Calidad",
+          subdata: {
+            approved: qualityReal[qualityReal.length - 1],
+            produced: performanceReal[performanceReal.length - 1],
+          },
+          info: "La gráfica de Calidad indica la proporción de piezas que cumplen con los estándares de calidad respecto al total de piezas producidas.",
+        },
+        {
+          data: (oeeRatio[oeeRatio.length - 1] * 100).toFixed(0),
+          title: "OEE",
+          subdata: { description: "Eficiencia Operativa" },
+          info: "La gráfica de OEE (Overall Equipment Effectiveness) refleja la eficiencia global del proceso y se calcula como el producto de la Disponibilidad, el Desempeño y la Calidad.",
+        },
+      ]);
+
+      // Log gauge information
+      console.log("Disponibilidad", availabilityRatio[availabilityRatio.length - 1] * 100, "%", availabilityReal[availabilityReal.length - 1], "min operando /", availabilityGoal[availabilityGoal.length - 1], "min disponibles");
+      console.log("Desempeño", performanceRatio[performanceRatio.length - 1] * 100, "%", performanceReal[performanceReal.length - 1], "pz producidas /", performanceGoal[performanceGoal.length - 1], "pz producibles");
+      console.log("Calidad", qualityRatio[qualityRatio.length - 1] * 100, "%", qualityReal[qualityReal.length - 1], "pz aprobadas /", performanceReal[performanceReal.length - 1], "pz producidas");
+      console.log("OEE", oeeRatio[oeeRatio.length - 1] * 100, "%");
+    } catch (error) {
+      console.error("Error fetching or processing OEE data:", error);
+    }
+  };
 
   useEffect(() => {
     // Check for the browser's theme preference
@@ -92,27 +319,27 @@ export default function App() {
 
   const [gaugeData, setGaugeData] = useState([
     {
-      data: 3,
+      data: "Loading...",
       title: "Disponibilidad",
-      subdata: { operating: 17, planned: 20 },
+      subdata: { operating: "Loading...", planned: "Loading..." },
       info: "La gráfica de Disponibilidad muestra la proporción entre el tiempo operado (en minutos) y el tiempo planificado para la producción.",
     },
     {
-      data: 5,
+      data: "Loading...",
       title: "Desempeño",
-      subdata: { produced: 23, planned: 55 },
+      subdata: { produced: "Loading...", planned: "Loading..." },
       info: "La gráfica de Desempeño representa la relación entre el número de piezas producidas y el número de piezas planificadas.",
     },
     {
-      data: 7,
+      data: "Loading...",
       title: "Calidad",
-      subdata: { approved: 5, produced: 23 },
+      subdata: { approved: "Loading...", produced: "Loading..." },
       info: "La gráfica de Calidad indica la proporción de piezas que cumplen con los estándares de calidad respecto al total de piezas producidas.",
     },
     {
-      data: 9,
+      data: "Loading...",
       title: "OEE",
-      subdata: { description: "Eficiencia Operativa" },
+      subdata: { description: "Loading..." },
       info: "La gráfica de OEE (Overall Equipment Effectiveness) refleja la eficiencia global del proceso y se calcula como el producto de la Disponibilidad, el Desempeño y la Calidad.",
     },
   ]);
@@ -123,21 +350,30 @@ export default function App() {
         name: "Estados de la Línea",
         data: [
           {
-            x: "Estados de la Línea", // Single row label
-            y: [new Date("2025-04-13T08:00:00").getTime(), new Date("2025-04-13T09:00:00").getTime()],
-            fillColor: "#009908", // Green for Operación normal
+            x: "Estados de la Línea",
+            y: [
+              new Date("2025-04-13T08:00:00").getTime(), // Ensure valid ISO format
+              new Date("2025-04-13T09:00:00").getTime(),
+            ],
+            fillColor: "#009908",
             label: "Operación normal",
           },
           {
-            x: "Estados de la Línea", // Single row label
-            y: [new Date("2025-04-13T09:00:00").getTime(), new Date("2025-04-13T10:30:00").getTime()],
-            fillColor: "#D9B918", // Yellow for Operación lenta
+            x: "Estados de la Línea",
+            y: [
+              new Date("2025-04-13T09:00:00").getTime(),
+              new Date("2025-04-13T10:30:00").getTime(),
+            ],
+            fillColor: "#D9B918",
             label: "Operación lenta",
           },
           {
-            x: "Estados de la Línea", // Single row label
-            y: [new Date("2025-04-13T10:30:00").getTime(), new Date("2025-04-13T12:00:00").getTime()],
-            fillColor: "#C70606", // Red for Línea detenida
+            x: "Estados de la Línea",
+            y: [
+              new Date("2025-04-13T10:30:00").getTime(),
+              new Date("2025-04-13T12:00:00").getTime(),
+            ],
+            fillColor: "#C70606",
             label: "Línea detenida",
           },
         ],
@@ -146,25 +382,25 @@ export default function App() {
     options: {
       chart: {
         type: "rangeBar",
-        height: 100, // Adjust height to fit a single row
+        height: 100,
       },
       plotOptions: {
         bar: {
           horizontal: true,
-          barHeight: "50%", // Adjust bar height for better visibility
+          barHeight: "50%",
         },
       },
       xaxis: {
         type: "datetime",
         labels: {
-          format: "HH:mm", // Format timestamps
+          format: "HH:mm",
         },
       },
       yaxis: {
-        show: true, // Show Y-axis with a single label
+        show: true,
         labels: {
           show: false,
-          formatter: () => "Estados de la Línea", // Single row label
+          formatter: () => "Estados de la Línea",
         },
       },
       tooltip: {
@@ -181,25 +417,23 @@ export default function App() {
           `;
         },
       },
-      colors: ["#28a745", "#ffc107", "#dc3545"], // Define colors for the states
+      colors: ["#28a745", "#ffc107", "#dc3545"],
     },
   });
 
   const [lineChartData, setLineChartData] = useState(() => {
-    const data = Array.from({ length: 25 }, (_, i) => {
-      const x = new Date(`2025-04-13T08:${i * 10}:00`).getTime(); // Generate timestamps every 10 minutes
-      const y = Math.floor(Math.random() * 100); // Generate random percentage values
-      return !isNaN(x) && !isNaN(y) ? { x, y } : null; // Filter out NaN values
-    }).filter((point) => point !== null); // Remove null values
-
-    const xMin = Math.min(...data.map((point) => point.x)); // Calculate the minimum X value
-    const xMax = Math.max(...data.map((point) => point.x)); // Calculate the maximum X value
+    const initialData = oeeGaugeDataArray.length
+      ? oeeGaugeDataArray.map((value, index) => ({
+          x: timestamps[index] || "",
+          y: value * 100, // Convert to percentage
+        }))
+      : []; // Start with no data if OEE data is not available
 
     return {
       series: [
         {
-          name: "Performance",
-          data,
+          name: "Eficiencia Global (OEE)",
+          data: initialData,
         },
       ],
       options: {
@@ -211,25 +445,15 @@ export default function App() {
           },
         },
         xaxis: {
-          type: "datetime", // Use datetime for X-axis
+          type: "category", // Use category for X-axis
           labels: {
+            show: false,
             format: "HH:mm", // Format timestamps as hours and minutes
           },
-          title: {
-            text: "Time",
-            style: {
-              color: "#ffffff",
-            },
-          },
-          min: xMin, // Dynamically set the minimum X value
-          max: xMax, // Dynamically set the maximum X value
         },
         yaxis: {
           title: {
-            text: "Percentage (%)",
-            style: {
-              color: "#ffffff",
-            },
+            text: "Porcentaje (%)",
           },
           labels: {
             formatter: (value) => `${value}%`, // Append % to Y-axis labels
@@ -253,6 +477,26 @@ export default function App() {
     };
   });
 
+  useEffect(() => {
+    if (oeeGaugeDataArray.length && timestamps.length) {
+      setLineChartData({
+        series: [
+          {
+            name: "Eficiencia Global (OEE)",
+            data: oeeGaugeDataArray.map((value, index) => ({
+              x: timestamps[index],
+              y: value * 100, // Convert to percentage
+            })),
+          },
+        ],
+        options: {
+          ...lineChartData.options,
+          xaxis: { ...lineChartData.options.xaxis, categories: timestamps },
+        },
+      });
+    }
+  }, [oeeGaugeDataArray, timestamps]);
+
   // Function to determine the variant based on the percentage value
   const getVariant = (percentage) => {
     if (percentage >= 75) return "Green";
@@ -271,6 +515,84 @@ export default function App() {
     }
     return points.join(" ");
   }
+
+  const handleLineChartClick = (event) => {
+    const target = event.target; // Get the target element of the event
+
+    if (!timestamps.length) {
+      console.error("Processed data is not available yet.");
+      return; // Exit the function if data is not available
+    }
+
+    if (target) {
+      console.log("LineChart clicked");
+      console.log("Target innerText:", target.innerText); // Print the inner text of the target
+
+      switch (target.innerText) {
+        case "Disponibilidad":
+          setLineChartData({
+            series: [
+              { name: "Meta de Disponibilidad", data: availabilityGoal.map((value, index) => ({ x: timestamps[index], y: value })) },
+              { name: "Disponibilidad Real", data: availabilityGaugeDataArray.map((value, index) => ({ x: timestamps[index], y: value })) },
+            ],
+            options: {
+              ...lineChartData.options,
+              xaxis: { type: "category" },
+              colors: ["#28a745", "#007bff"], // Green and Blue
+            },
+          });
+          break;
+
+        case "Desempeño":
+          setLineChartData({
+            series: [
+              { name: "Meta de Desempeño", data: performanceGoal.map((value, index) => ({ x: timestamps[index], y: value })) },
+              { name: "Desempeño Real", data: performanceGaugeDataArray.map((value, index) => ({ x: timestamps[index], y: value })) },
+            ],
+            options: {
+              ...lineChartData.options,
+              xaxis: { type: "category" },
+              colors: ["#28a745", "#007bff"], // Green and Blue
+            },
+          });
+          break;
+
+        case "Calidad":
+          setLineChartData({
+            series: [
+              { name: "Meta de Calidad", data: performanceGaugeDataArray.map((value, index) => ({ x: timestamps[index], y: value })) },
+              { name: "Calidad Real", data: qualityGaugeDataArray.map((value, index) => ({ x: timestamps[index], y: value })) },
+            ],
+            options: {
+              ...lineChartData.options,
+              xaxis: { type: "category" },
+              colors: ["#28a745", "#007bff"], // Green and Blue
+            },
+          });
+          break;
+
+        case "OEE %":
+          setLineChartData({
+            series: [{ name: "Eficiencia Global (OEE)", data: oeeGaugeDataArray.map((value, index) => ({ x: timestamps[index], y: value * 100 })) }],
+            options: {
+              ...lineChartData.options,
+              xaxis: { type: "category" },
+              colors: ["#007bff"], // Blue
+            },
+          });
+          break;
+
+        default:
+          console.log("No matching text for chart update");
+      }
+    } else {
+      console.log("LineChart clicked, no target found");
+    }
+  };
+
+  useEffect(() => {
+    fetchAndProcessData();
+  }, []);
 
   return (
     <div
@@ -360,7 +682,7 @@ export default function App() {
           <div className="flex flex-row justify-between items-center gap-2">
             <div className="gauge-container" style={{ width: '100%' }}>
               {gaugeData.map((gauge, index) => {
-                const percentage = gauge.data * 10;
+                const percentage = gauge.data;
                 const variant = getVariant(percentage);
 
                 return (
@@ -392,15 +714,7 @@ export default function App() {
                 <LineChart
                   variant="NOGRAPHS"
                   style={{ width: '100%' }}
-                  onClick={(event) => {
-                    const target = event.target; // Get the target element of the event
-                    if (target) {
-                      console.log("LineChart clicked");
-                      console.log("Target innerText:", target.innerText); // Print the inner text of the target
-                    } else {
-                      console.log("LineChart clicked, no target found");
-                    }
-                  }}
+                  onClick={handleLineChartClick}
                 />
                 <div className="line-chart-wrapper-graph">
                   <ReactApexChart
@@ -435,6 +749,13 @@ export default function App() {
       <div className="fixed bottom-4 right-4 z-50">
         <ChatbotButton />
       </div>
+      <OEEVisualization
+        oeeData={oeeData}
+        availabilityReal={availabilityGaugeData}
+        performanceReal={performanceGaugeData}
+        qualityReal={qualityGaugeData}
+        oeeRatio={oeeGaugeData}
+      />
     </div>
   );
 }
