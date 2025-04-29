@@ -81,7 +81,27 @@ const StateTimeline = ({ data }) => {
         text: "Timestamps",
       },
     },
-    colors: ["#28a745", "#ffc107", "#dc3545"],
+    tooltip: {
+      custom: function (opts) {
+        const from = opts.y1
+          ? new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : "N/A";
+        const to = opts.y2
+          ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : "N/A";
+
+        const label =
+          opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
+
+        return `
+          <div class="apexcharts-tooltip-rangebar">
+            <span style="color: ${opts.color}">${label}</span>
+            <div>${from} - ${to}</div>
+          </div>
+        `;
+      },
+    },
+    colors: ["#28a745", "#ffc107", "#dc3545"], // Green, Yellow, Red
   };
 
   return <ReactApexChart options={options} series={data.series} type="rangeBar" height={100} />;
@@ -118,6 +138,23 @@ function convertUTCDateToLocalDate(date) {
   return newDate;
 }
 
+const getLineBarVariantFromLastState = (actualOEEstate) => {
+  if (!actualOEEstate) {
+    return "Stop"; // Fallback variant if no state is available
+  }
+
+  // Map the state to the corresponding variant
+  switch (actualOEEstate) {
+    case "G": // Green
+      return "Good";
+    case "Y": // Yellow
+      return "Low";
+    case "R": // Red
+    default:
+      return "Default"; // Fallback variant
+  }
+};
+
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [stationTitle, setStationTitle] = useState('Etiquetado'); // State for StationDropdown title
@@ -130,6 +167,8 @@ export default function App() {
 
   const [turno, setTurno] = useState("Turno matutino");
   const [station, setStation] = useState("Etiquetado");
+
+  const [actualOEEstate, setActualOEState] = useState("G");
 
   const [oeeData, setOEEData] = useState(null);
   const [availabilityReal, setAvailabilityReal] = useState(0);
@@ -188,6 +227,7 @@ export default function App() {
           const to = opts.y2
             ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
             : "N/A";
+
           const label =
             opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
 
@@ -217,13 +257,22 @@ export default function App() {
 
       // === Extract data from the new format ===
       const timestampsRaw = data.timestamps;
+      console.log("Original Timestamps:", timestampsRaw);
       const timestamps = timestampsRaw.map((t) => {
-        const parsedDate = new Date(t);
-        if (isNaN(parsedDate)) {
+        // Parse the timestamp as local time
+        const [datePart, timePart] = t.split(" "); // Split into date and time
+        const [year, month, day] = datePart.split("-").map(Number); // Extract year, month, day
+        const [hours, minutes, seconds] = timePart.split(":").map(Number); // Extract hours, minutes, seconds
+
+        // Create a Date object in local time
+        const localDate = new Date(year, month - 1, day, hours, minutes, seconds);
+
+        if (isNaN(localDate.getTime())) {
           console.error(`Invalid date format: ${t}`);
           return null;
         }
-        return parsedDate.toISOString(); // Use ISO format for consistency
+
+        return localDate.getTime(); // Return the timestamp in milliseconds
       }).filter((t) => t !== null); // Remove null entries
 
       console.log("Processed Timestamps:", timestamps); // Debug log
@@ -289,6 +338,15 @@ export default function App() {
         return "R";
       });
 
+      // Set actualOEEstate to the last value of the states array
+      if (states.length > 0) {
+        setActualOEState(states[states.length]);
+      }
+
+      // Print actualOEEstate and the last value in states
+      console.log("actualOEEstate:", states[states.length - 1]);
+      console.log("Last value in states:", states[states.length - 1]);
+
       const combinedStateTimelineData = states.map((state, index) => {
         const startTime = timestamps[index] ? new Date(timestamps[index]).getTime() : null;
         const endTime = timestamps[index + 1] ? new Date(timestamps[index + 1]).getTime() : startTime;
@@ -298,14 +356,22 @@ export default function App() {
           return null; // Skip invalid data
         }
 
+        // Map the state to a label
+        const label = state === "G" ? "Good" : state === "Y" ? "Low" : state === "R" ? "Stopped" : "N/A";
+
         return {
           x: "Estados de la Línea", // Single label for all data
           y: [startTime, endTime], // Time range
           fillColor: state === "G" ? "#28a745" : state === "Y" ? "#ffc107" : "#dc3545", // Green, Yellow, Red
+          label, // Add the label for the tooltip
         };
       }).filter((data) => data !== null); // Remove null entries
 
       console.log("Combined State Timeline Data:", combinedStateTimelineData);
+
+      // Get the first and last timestamps
+      const minTimestamp = timestamps.length > 0 ? new Date(timestamps[0]).getTime() : null;
+      const maxTimestamp = timestamps.length > 0 ? new Date(timestamps[timestamps.length - 1]).getTime() : null;
 
       setStateTimeline({
         series: [
@@ -336,6 +402,8 @@ export default function App() {
             title: {
               text: "Timestamps",
             },
+            min: minTimestamp, // Set the minimum timestamp
+            max: maxTimestamp, // Set the maximum timestamp
           },
           yaxis: {
             show: false, // Hide Y-axis labels
@@ -348,6 +416,7 @@ export default function App() {
               const to = opts.y2
                 ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                 : "N/A";
+
               const label =
                 opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
 
@@ -700,9 +769,9 @@ export default function App() {
         <div className={`flex-1 p-6 overflow-auto padding ${isDarkMode ? 'dark' : ''}`}>
           <div className="line-bar-container padding">
             <LineBar
-              variant={getOEEVariant(oeeGaugeData * 100)} // Dynamically set the variant
-              style={{ width: '100%' }}
-              className={`${isDarkMode ? 'dark' : ''}`}
+              variant={getLineBarVariantFromLastState(actualOEEstate)} // Pass actualOEEstate
+              style={{ width: "100%" }}
+              className={`${isDarkMode ? "dark" : ""}`}
             />
           </div>
           <div className="line-bar-container padding" >
