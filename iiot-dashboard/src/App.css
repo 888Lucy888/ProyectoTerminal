@@ -291,3 +291,11 @@ body.dark {
   margin-inline-start: 25%;
   /* Reduced spacing for date components */
 }
+
+.custom-datepicker-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}

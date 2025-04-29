@@ -8,6 +8,11 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
+import { parseISO } from 'date-fns'; 
+import { DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import esLocale from 'date-fns/locale/es';
 import './App.css';
 //FRAMER
 import './framer/styles.css';
@@ -67,7 +72,15 @@ const StateTimeline = ({ data }) => {
   const options = {
     chart: { type: "rangeBar" },
     plotOptions: { bar: { horizontal: true } },
-    xaxis: { type: "datetime" },
+    xaxis: {
+      type: "datetime",
+      labels: {
+        format: "HH:mm", // Format timestamps as hours and minutes
+      },
+      title: {
+        text: "Timestamps",
+      },
+    },
     colors: ["#28a745", "#ffc107", "#dc3545"],
   };
 
@@ -94,6 +107,16 @@ const OEEVisualization = ({ oeeData, availabilityReal, performanceReal, qualityR
   );
 };
 
+const getOEEVariant = (oee) => {
+  if (oee < 1) return "Stop"; // Stop if OEE is less than 1
+  if (oee < 80) return "Low"; // Low if OEE is less than 80
+  return "Good"; // Good otherwise
+};
+
+function convertUTCDateToLocalDate(date) {
+  const newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+  return newDate;
+}
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -104,6 +127,9 @@ export default function App() {
     month: '2-digit',
     day: '2-digit',
   }).split('/').reverse().join('-')); // State for ButtonCalendar date
+
+  const [turno, setTurno] = useState("Turno matutino");
+  const [station, setStation] = useState("Etiquetado");
 
   const [oeeData, setOEEData] = useState(null);
   const [availabilityReal, setAvailabilityReal] = useState(0);
@@ -123,6 +149,59 @@ export default function App() {
   const [availabilityGaugeDataArray, setAvailabilityGaugeDataArray] = useState([]);
   const [performanceGaugeDataArray, setPerformanceGaugeDataArray] = useState([]);
   const [qualityGaugeDataArray, setQualityGaugeDataArray] = useState([]);
+
+  const [stateTimeline, setStateTimeline] = useState({
+    series: [],
+    options: {
+      chart: {
+        type: "rangeBar",
+        height: 400, // Adjust height for better visibility
+        zoom: {
+          enabled: true, // Allow zooming
+        },
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true, // Horizontal bars
+          barHeight: "80%", // Adjust bar height for better visibility
+        },
+      },
+      xaxis: {
+        type: "datetime",
+        labels: {
+          format: "HH:mm", // Format timestamps as hours and minutes
+        },
+        title: {
+          text: "Timestamps",
+        },
+        min: undefined, // Will be dynamically set based on data
+        max: undefined, // Will be dynamically set based on data
+      },
+      yaxis: {
+        show: false, // Hide Y-axis labels
+      },
+      tooltip: {
+        custom: function (opts) {
+          const from = opts.y1
+            ? new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            : "N/A";
+          const to = opts.y2
+            ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            : "N/A";
+          const label =
+            opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
+
+          return `
+            <div class="apexcharts-tooltip-rangebar">
+              <span style="color: ${opts.color}">${label}</span>
+              <div>${from} - ${to}</div>
+            </div>
+          `;
+        },
+      },
+      colors: ["#28a745", "#ffc107", "#dc3545"], // Green, Yellow, Red
+    },
+  });
 
   const fetchAndProcessData = async () => {
     try {
@@ -144,8 +223,11 @@ export default function App() {
           console.error(`Invalid date format: ${t}`);
           return null;
         }
-        return parsedDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      }).filter((t) => t !== null);
+        return parsedDate.toISOString(); // Use ISO format for consistency
+      }).filter((t) => t !== null); // Remove null entries
+
+      console.log("Processed Timestamps:", timestamps); // Debug log
+      setTimestamps(timestamps); // Update state
 
       const minutesGoal = data.availability.minutes_goal || 1; // Avoid division by zero
       const productionMeasures = data.performance.production_measures.map((p) => parseInt(p, 10));
@@ -205,6 +287,80 @@ export default function App() {
         if (r >= statusLimit) return "G";
         if (r > 0) return "Y";
         return "R";
+      });
+
+      const combinedStateTimelineData = states.map((state, index) => {
+        const startTime = timestamps[index] ? new Date(timestamps[index]).getTime() : null;
+        const endTime = timestamps[index + 1] ? new Date(timestamps[index + 1]).getTime() : startTime;
+
+        if (!startTime || isNaN(startTime) || !endTime || isNaN(endTime)) {
+          console.error(`Invalid timestamps at index ${index}:`, timestamps[index], timestamps[index + 1]);
+          return null; // Skip invalid data
+        }
+
+        return {
+          x: "Estados de la Línea", // Single label for all data
+          y: [startTime, endTime], // Time range
+          fillColor: state === "G" ? "#28a745" : state === "Y" ? "#ffc107" : "#dc3545", // Green, Yellow, Red
+        };
+      }).filter((data) => data !== null); // Remove null entries
+
+      console.log("Combined State Timeline Data:", combinedStateTimelineData);
+
+      setStateTimeline({
+        series: [
+          {
+            name: "Estados de la Línea",
+            data: combinedStateTimelineData, // Pass the combined data
+          },
+        ],
+        options: {
+          chart: {
+            type: "rangeBar",
+            height: 400, // Adjust height for better visibility
+            zoom: {
+              enabled: true, // Allow zooming
+            },
+          },
+          plotOptions: {
+            bar: {
+              horizontal: true, // Horizontal bars
+              barHeight: "80%", // Adjust bar height for better visibility
+            },
+          },
+          xaxis: {
+            type: "datetime", // Use datetime for X-axis
+            labels: {
+              format: "HH:mm", // Format timestamps as hours and minutes
+            },
+            title: {
+              text: "Timestamps",
+            },
+          },
+          yaxis: {
+            show: false, // Hide Y-axis labels
+          },
+          tooltip: {
+            custom: function (opts) {
+              const from = opts.y1
+                ? new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "N/A";
+              const to = opts.y2
+                ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "N/A";
+              const label =
+                opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
+
+              return `
+                <div class="apexcharts-tooltip-rangebar">
+                  <span style="color: ${opts.color}">${label}</span>
+                  <div>${from} - ${to}</div>
+                </div>
+              `;
+            },
+          },
+          colors: ["#28a745", "#ffc107", "#dc3545"], // Default colors (not used if fillColor is set)
+        },
       });
 
       // === Prepare data for ReactApexChart ===
@@ -343,83 +499,6 @@ export default function App() {
       info: "La gráfica de OEE (Overall Equipment Effectiveness) refleja la eficiencia global del proceso y se calcula como el producto de la Disponibilidad, el Desempeño y la Calidad.",
     },
   ]);
-
-  const [stateTimeline, setStateTimeline] = useState({
-    series: [
-      {
-        name: "Estados de la Línea",
-        data: [
-          {
-            x: "Estados de la Línea",
-            y: [
-              new Date("2025-04-13T08:00:00").getTime(), // Ensure valid ISO format
-              new Date("2025-04-13T09:00:00").getTime(),
-            ],
-            fillColor: "#009908",
-            label: "Operación normal",
-          },
-          {
-            x: "Estados de la Línea",
-            y: [
-              new Date("2025-04-13T09:00:00").getTime(),
-              new Date("2025-04-13T10:30:00").getTime(),
-            ],
-            fillColor: "#D9B918",
-            label: "Operación lenta",
-          },
-          {
-            x: "Estados de la Línea",
-            y: [
-              new Date("2025-04-13T10:30:00").getTime(),
-              new Date("2025-04-13T12:00:00").getTime(),
-            ],
-            fillColor: "#C70606",
-            label: "Línea detenida",
-          },
-        ],
-      },
-    ],
-    options: {
-      chart: {
-        type: "rangeBar",
-        height: 100,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          barHeight: "50%",
-        },
-      },
-      xaxis: {
-        type: "datetime",
-        labels: {
-          format: "HH:mm",
-        },
-      },
-      yaxis: {
-        show: true,
-        labels: {
-          show: false,
-          formatter: () => "Estados de la Línea",
-        },
-      },
-      tooltip: {
-        custom: function (opts) {
-          const from = new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-          const to = new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-          const label = opts.ctx.w.config.series[opts.seriesIndex].data[opts.dataPointIndex].label;
-
-          return `
-            <div class="apexcharts-tooltip-rangebar">
-              <span style="color: ${opts.color}">${label}</span>
-              <div>${from} - ${to}</div>
-            </div>
-          `;
-        },
-      },
-      colors: ["#28a745", "#ffc107", "#dc3545"],
-    },
-  });
 
   const [lineChartData, setLineChartData] = useState(() => {
     const initialData = oeeGaugeDataArray.length
@@ -594,6 +673,10 @@ export default function App() {
     fetchAndProcessData();
   }, []);
 
+  useEffect(() => {
+    console.log("Timestamps:", timestamps);
+  }, [timestamps]);
+
   return (
     <div
       className={`flex flex-col min-h-screen ${isDarkMode ? 'dark' : ''}`}
@@ -616,7 +699,11 @@ export default function App() {
         {/* Right content */}
         <div className={`flex-1 p-6 overflow-auto padding ${isDarkMode ? 'dark' : ''}`}>
           <div className="line-bar-container padding">
-            <LineBar variant="Good" style={{ width: '100%' }} className={`${isDarkMode ? 'dark' : ''}`}/>
+            <LineBar
+              variant={getOEEVariant(oeeGaugeData * 100)} // Dynamically set the variant
+              style={{ width: '100%' }}
+              className={`${isDarkMode ? 'dark' : ''}`}
+            />
           </div>
           <div className="line-bar-container padding" >
           <Panel variant="NOGRAPHS" style={{ width: '100%' }} />
@@ -624,13 +711,13 @@ export default function App() {
             {/* StationDropdown */}
             <div className="row-item">
               <StationDropdown
-                title={stationTitle} // Dynamically set the title
+                title={station} // Dynamically set the title
                 onClick={(event) => {
                   const target = event.target; // Get the target element of the event
                   if (target) {
                     console.log("StationDropdown clicked");
                     console.log("Target innerText:", target.innerText); // Print the inner text of the target
-                    setStationTitle(target.innerText); // Update the title dynamically
+                    setStation(target.innerText); // Update the station state
                   } else {
                     console.log("StationDropdown clicked, no target found");
                   }
@@ -639,14 +726,14 @@ export default function App() {
             </div>
             <div className="row-item dropdown-group">
               <ShiftDropdown
-                title={shiftTitle} // Dynamically set the title
+                title={turno} // Dynamically set the title
                 shifts={["Turno 1", "Turno 2", "Turno 3"]}
                 onClick={(event) => {
                     const target = event.target;
                     if (target) {
                       console.log("ShiftDropdown clicked");
                       console.log("Target innerText:", target.innerText);
-                    setShiftTitle(target.innerText); // Update the title dynamically
+                    setTurno(target.innerText); // Update the turno state
                     } else {
                       console.log("ShiftDropdown clicked, no target found");
                     }
@@ -656,26 +743,22 @@ export default function App() {
 
             {/* Date group */}
             <div className="row-item date-group">
-              <ButtonCalendar
-                date={selectedDate} // Dynamically set the date
-                onDateSelect={(date) => {
-                  console.log(`Selected date: ${date}`);
-                  setSelectedDate(date); // Update the selected date
-                }}
-              />
-            </div>
-            <div className="row-item">
-              <ReturnDateButton
-                onClick={() => {
-                  const today = new Date().toLocaleDateString('es-MX', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                  }).split('/').reverse().join('-'); // Format as YYYY-MM-DD
-                  console.log(`ReturnDateButton clicked, setting date to today (Mexico time): ${today}`);
-                  setSelectedDate(today); // Update the selected date to today's date in Mexico time
-                }}
-              />
+              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={esLocale}>
+                <DatePicker
+                  label="Selecciona una fecha"
+                  value={new Date(parseISO(selectedDate))} // Bind the selected date to the state
+                  onChange={(date) => {
+                    if (date) {
+                      // Adjust the date to the local timezone and fix the offset issue
+                      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+                      const formattedDate = localDate.toISOString().substring(0, 10); // Format as YYYY-MM-DD
+                      console.log(`Date selected: ${formattedDate}`);
+                      setSelectedDate(formattedDate); // Update the selectedDate state
+                    }
+                  }}
+                  renderInput={(params) => <input {...params} className="custom-datepicker-input" />}
+                />
+              </LocalizationProvider>
             </div>
           </div>
           </div>
@@ -715,6 +798,8 @@ export default function App() {
                   variant="NOGRAPHS"
                   style={{ width: '100%' }}
                   onClick={handleLineChartClick}
+                  text={`${station} - ${turno}`}
+                  date={selectedDate}
                 />
                 <div className="line-chart-wrapper-graph">
                   <ReactApexChart
@@ -729,15 +814,20 @@ export default function App() {
             </div>
             <div className="time-chart-wrapper">
               <div className="line-chart-container">
-                <TimelineChart variant="NOGRAPH" style={{ width: '100%' }} />
+                <TimelineChart
+                  variant="NOGRAPH"
+                  style={{ width: '100%' }}
+                  text={`${station} - ${turno}`}
+                  date={selectedDate}
+                />
               </div>
               <div className="time-chart-wrapper-graph">
                 <ReactApexChart
                   options={stateTimeline.options}
                   series={stateTimeline.series}
                   type="rangeBar"
-                  style={{ width: '100%' }}
-                  height={300}
+                  style={{ width: "100%" }}
+                  height={400} // Adjust height for better visibility
                 />
               </div>
             </div>
