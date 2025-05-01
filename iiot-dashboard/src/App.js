@@ -1,6 +1,6 @@
 // React and Material-UI imports
 import React, { useState, useEffect } from 'react';
-import { createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { parseISO } from 'date-fns'; 
 import { DatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,6 +20,9 @@ import LineChart from './framer/line-chart';
 import TimelineChart from './framer/timeline-chart';
 import StationDropdown from './framer/station-dropdown';
 import ShiftDropdown from './framer/shift-dropdown';
+
+// My Components
+import OEEVisualization from "./components/OEEVisualization";
 
 // AWS Amplify configuration
 import { Amplify } from '@aws-amplify/core';
@@ -43,87 +46,12 @@ Amplify.configure({
   }
 });
 
-// Define a dark theme for the application
-const darkTheme = createTheme({
+// Create a custom theme
+const theme = createTheme({
   palette: {
-    mode: 'dark',
-    primary: { main: '#90caf9' },
-    secondary: { main: '#f48fb1' },
-    background: { default: '#121212', paper: '#1e1e1e' },
+    mode: 'light', // Default mode
   },
 });
-
-// Component to render a timeline chart for state data
-const StateTimeline = ({ data }) => {
-  const options = {
-    chart: { type: "rangeBar" },
-    plotOptions: { bar: { horizontal: true } },
-    xaxis: {
-      type: "datetime",
-      labels: {
-        format: "HH:mm", // Format timestamps as hours and minutes
-      },
-      title: {
-        text: "Timestamps",
-      },
-    },
-    tooltip: {
-      custom: function (opts) {
-        const from = opts.y1
-          ? new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : "N/A";
-        const to = opts.y2
-          ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : "N/A";
-
-        const label =
-          opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
-
-        return `
-          <div class="apexcharts-tooltip-rangebar">
-            <span style="color: ${opts.color}">${label}</span>
-            <div>${from} - ${to}</div>
-          </div>
-        `;
-      },
-    },
-    colors: ["#28a745", "#ffc107", "#dc3545"], // Green, Yellow, Red
-  };
-
-  return <ReactApexChart options={options} series={data.series} type="rangeBar" height={100} />;
-};
-
-// Component to display OEE metrics and timeline
-const OEEVisualization = ({ oeeData, availabilityReal, performanceReal, qualityReal, oeeRatio }) => {
-  return (
-    <div>
-      <h1>OEE Dashboard</h1>
-      {oeeData && (
-        <>
-          <StateTimeline data={oeeData.stateTimeline} />
-          <div>
-            <h2>Metrics</h2>
-            <p>Availability: {availabilityReal}</p>
-            <p>Performance: {performanceReal}</p>
-            <p>Quality: {qualityReal}</p>
-            <p>OEE Ratio: {(oeeRatio * 100).toFixed(2)}%</p>
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
-
-const getOEEVariant = (oee) => {
-  if (oee < 1) return "Stop"; // Stop if OEE is less than 1
-  if (oee < 80) return "Low"; // Low if OEE is less than 80
-  return "Good"; // Good otherwise
-};
-
-function convertUTCDateToLocalDate(date) {
-  const newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
-  return newDate;
-}
 
 // Utility function to map OEE state to a line bar variant
 const getLineBarVariantFromLastState = (actualOEEstate) => {
@@ -143,6 +71,12 @@ export default function App() {
   const [actualOEEstate, setActualOEState] = useState("G");
   const [variant, setVariant] = useState(getLineBarVariantFromLastState("G")); // Initialize with default variant
 
+  const dynamicTheme = createTheme({
+    palette: {
+      mode: isDarkMode ? 'dark' : 'light', // Switch between light and dark modes
+    },
+  });
+
   // Update the variant whenever actualOEEstate changes
   useEffect(() => {
     const updatedVariant = getLineBarVariantFromLastState(actualOEEstate);
@@ -153,7 +87,7 @@ export default function App() {
   // Debug log to check the variant during rendering
   console.log(`Render - variant: ${variant}`);
 
-  const [station, setStation] = useState("Etiquetado");
+  const [station, setStation] = useState("Envasado");
   const [turno, setTurno] = useState("Turno matutino");
   const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString('es-MX', {
     year: 'numeric',
@@ -170,9 +104,9 @@ export default function App() {
   const [oeeRatio, setOEERatio] = useState(0);
 
   const stationToId = {
-    "Etiquetado": 1,
-    "Estación 01": 2,
-    "Estación 02": 3,
+    "Envasado": 1,
+    "Etiquetado": 2,
+    "Sellado": 3,
   };
 
   const turnoToId = {
@@ -782,6 +716,7 @@ export default function App() {
   }, [timestamps]);
 
   return (
+      <ThemeProvider theme={dynamicTheme}>
     <div
       className={`flex flex-col min-h-screen ${isDarkMode ? 'dark' : ''}`}
       style={{
@@ -860,7 +795,12 @@ export default function App() {
                       setSelectedDate(formattedDate); // Update the selectedDate state
                     }
                   }}
-                  renderInput={(params) => <input {...params} className="custom-datepicker-input" />}
+                  renderInput={(params) => (
+                    <input
+                      {...params}
+                      className={`custom-datepicker-input ${isDarkMode ? "dark-theme-datepicker" : ""}`}
+                    />
+                  )}
                 />
               </LocalizationProvider>
             </div>
@@ -951,5 +891,6 @@ export default function App() {
         oeeRatio={oeeGaugeData}
       />
     </div>
+      </ThemeProvider>
   );
 }
