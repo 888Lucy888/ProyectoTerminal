@@ -13,7 +13,7 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'Desktop' | 'Desktop Open' | 'Tablet' | 'Tablet Open' | 'Mobile' | 'Mobile Open' | 'Variant 7'
+    "variant"?: 'Desktop' | 'Desktop Open' | 'Tablet' | 'Tablet Open' | 'Mobile' | 'Mobile Open' | 'Variant 7' | 'NOCHAT' | 'CLOSE'
     "onClick"?: Function
     "text"?: string
 }

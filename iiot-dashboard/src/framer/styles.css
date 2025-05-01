@@ -1114,7 +1114,7 @@ NavigationContainer
     unicodeRange: U+1F00-1FFF;
 }
 
-/* used by bar-from-timeline.js, bullet-line-chart.js, button-calendar.js, calendar.js, content-panel-02.js, content-panel.js, dashboard-tab.js, data-tab.js, gauge-chart.js, icon-info.js, left-menu-desktop.js, left-menu-dropdown.js, line-bar.js, line-chart.js, line-menu-02.js, notification-settings-tab.js, number-calendar.js, options.js, panel.js, radio-buttons-bar.js, radio-selector.js, shift-dropdown.js, station-dropdown.js, sub-menu-left.js, time-animation.js, timeline-chart.js */
+/* used by bar-from-timeline.js, bullet-line-chart.js, button-calendar.js, calendar.js, content-panel-02.js, content-panel.js, data-tab.js, gauge-chart.js, icon-info.js, left-menu-desktop.js, left-menu-dropdown.js, line-bar.js, line-chart.js, line-menu-02.js, number-calendar.js, panel.js, radio-buttons-bar.js, radio-selector.js, shift-dropdown.js, station-dropdown.js, sub-menu-left.js, time-animation.js, timeline-chart.js */
 
 @font-face {
     font-family: 'Manrope'; 
@@ -1132,7 +1132,7 @@ NavigationContainer
     font-weight: 400;
 }
 
-/* used by content-panel-02.js, content-panel.js, dashboard-tab.js, data-tab.js, gauge-chart.js, line-chart.js, notification-settings-tab.js, panel.js, radio-buttons-bar.js, radio-selector.js, timeline-chart.js */
+/* used by content-panel-02.js, content-panel.js, data-tab.js, gauge-chart.js, line-chart.js, panel.js, radio-buttons-bar.js, radio-selector.js, timeline-chart.js */
 
 @font-face {
     font-family: 'Manrope'; 

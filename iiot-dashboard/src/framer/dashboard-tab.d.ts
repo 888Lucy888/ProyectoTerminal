@@ -13,10 +13,7 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'Dashboard Selected' | 'Dashboard'
-    "click"?: Function
-    "fontSize"?: number
-    "padding"?: undefined
+
 }
 
 const DashboardTabFramerComponent = (props: Props) => any

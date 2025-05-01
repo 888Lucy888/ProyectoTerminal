@@ -13,10 +13,7 @@ export interface Props {
     width?: any
     height?: any
     layoutId?: string
-    "variant"?: 'Notification Settings Selected' | 'Notification Settings'
-    "click"?: Function
-    "padding"?: undefined
-    "fontSize"?: number
+
 }
 
 const NotificationSettingsTabFramerComponent = (props: Props) => any

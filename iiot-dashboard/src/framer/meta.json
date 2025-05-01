@@ -2006,7 +2006,7 @@
       "format": "esm"
     },
     "virtual:user-msg": {
-      "bytes": 2558,
+      "bytes": 2579,
       "imports": [
         {
           "path": "react",
@@ -3520,8 +3520,8 @@
       ],
       "format": "esm"
     },
-    "/:https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/0oDUjxlQcOYyMNbtJFLX/s4EQk8KNU.js": {
-      "bytes": 45250,
+    "/:https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/cDOBDXoC9WPbF9pPH4h6/s4EQk8KNU.js": {
+      "bytes": 42435,
       "imports": [
         {
           "path": "react/jsx-runtime",
@@ -3590,9 +3590,9 @@
           "external": true
         },
         {
-          "path": "/:https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/0oDUjxlQcOYyMNbtJFLX/s4EQk8KNU.js",
+          "path": "/:https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/cDOBDXoC9WPbF9pPH4h6/s4EQk8KNU.js",
           "kind": "import-statement",
-          "original": "https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/0oDUjxlQcOYyMNbtJFLX/s4EQk8KNU.js"
+          "original": "https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/cDOBDXoC9WPbF9pPH4h6/s4EQk8KNU.js"
         },
         {
           "path": "unframer",
@@ -4461,14 +4461,14 @@
         "virtual:chatbot-button": {
           "bytesInOutput": 1425
         },
-        "/:https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/0oDUjxlQcOYyMNbtJFLX/s4EQk8KNU.js": {
-          "bytesInOutput": 43916
+        "/:https://framerusercontent.com/modules/5FF3u6ijFkmb3JftxxVQ/cDOBDXoC9WPbF9pPH4h6/s4EQk8KNU.js": {
+          "bytesInOutput": 41023
         },
         "/:https://framerusercontent.com/modules/YlKU53CdDss9o1Y3l19z/0whb5n5y2kIiM1vdG8DN/NLuCNm8M5.js": {
           "bytesInOutput": 11882
         }
       },
-      "bytes": 57906
+      "bytes": 55013
     },
     "chunks/chunk-WDJC2ACC.js": {
       "imports": [
@@ -5964,10 +5964,10 @@
       "entryPoint": "virtual:user-msg",
       "inputs": {
         "virtual:user-msg": {
-          "bytesInOutput": 1366
+          "bytesInOutput": 1387
         }
       },
-      "bytes": 1506
+      "bytes": 1527
     },
     "chunks/chunk-HIDUDDIM.js": {
       "imports": [

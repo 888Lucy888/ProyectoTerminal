@@ -23,6 +23,7 @@ import ShiftDropdown from './framer/shift-dropdown';
 
 // My Components
 import OEEVisualization from "./components/OEEVisualization";
+import ChatWindow from "./components/ChatWindow";
 
 // AWS Amplify configuration
 import { Amplify } from '@aws-amplify/core';
@@ -46,13 +47,6 @@ Amplify.configure({
   }
 });
 
-// Create a custom theme
-const theme = createTheme({
-  palette: {
-    mode: 'light', // Default mode
-  },
-});
-
 // Utility function to map OEE state to a line bar variant
 const getLineBarVariantFromLastState = (actualOEEstate) => {
   switch (actualOEEstate) {
@@ -67,6 +61,7 @@ const getLineBarVariantFromLastState = (actualOEEstate) => {
 export default function App() {
   // State variables for theme, dropdowns, and OEE data
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const [actualOEEstate, setActualOEState] = useState("G");
   const [variant, setVariant] = useState(getLineBarVariantFromLastState("G")); // Initialize with default variant
@@ -659,7 +654,7 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
-              colors: ["#28a745", "#007bff"], // Green and Blue
+              colors: ["#28a745", "#00A5CF"], // Green and Blue
             },
           });
           break;
@@ -673,7 +668,7 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
-              colors: ["#28a745", "#007bff"], // Green and Blue
+              colors: ["#28a745", "#00A5CF"], // Green and Blue
             },
           });
           break;
@@ -687,7 +682,7 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
-              colors: ["#28a745", "#007bff"], // Green and Blue
+              colors: ["#28a745", "#00A5CF"], // Green and Blue
             },
           });
           break;
@@ -698,7 +693,7 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
-              colors: ["#007bff"], // Blue
+              colors: ["#00A5CF"],
             },
           });
           break;
@@ -706,13 +701,10 @@ export default function App() {
         default:
           console.log("No matching text for chart update");
       }
-    } else {
-      console.log("LineChart clicked, no target found");
     }
   };
 
   useEffect(() => {
-    //console.log("Timestamps:", timestamps);
   }, [timestamps]);
 
   return (
@@ -739,7 +731,7 @@ export default function App() {
         <div className={`flex-1 p-6 overflow-auto padding ${isDarkMode ? 'dark' : ''}`}>
           <div className="line-bar-container padding">
             <LineBar
-              variant={variant} // Use the dynamically updated variant
+              variant={variant}
               style={{ width: "100%" }}
               className={`${isDarkMode ? "dark" : ""}`}
             />
@@ -750,31 +742,22 @@ export default function App() {
             {/* StationDropdown */}
             <div className="row-item">
               <StationDropdown
-                title={station} // Dynamically set the title
+                title={station}
                 onClick={(event) => {
-                  const target = event.target; // Get the target element of the event
+                  const target = event.target;
                   if (target) {
-                    console.log("StationDropdown clicked");
-                    console.log("Target innerText:", target.innerText); // Print the inner text of the target
-                    setStation(target.innerText); // Update the station state
-                  } else {
-                    console.log("StationDropdown clicked, no target found");
+                    setStation(target.innerText);
                   }
                 }}
               />
             </div>
             <div className="row-item dropdown-group">
               <ShiftDropdown
-                title={turno} // Dynamically set the title
-                shifts={["Turno 1", "Turno 2", "Turno 3"]}
+                title={turno}
                 onClick={(event) => {
                     const target = event.target;
                     if (target) {
-                      console.log("ShiftDropdown clicked");
-                      console.log("Target innerText:", target.innerText);
-                    setTurno(target.innerText); // Update the turno state
-                    } else {
-                      console.log("ShiftDropdown clicked, no target found");
+                      setTurno(target.innerText);
                     }
                   }}
               />
@@ -791,8 +774,7 @@ export default function App() {
                       // Adjust the date to the local timezone and fix the offset issue
                       const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
                       const formattedDate = localDate.toISOString().substring(0, 10); // Format as YYYY-MM-DD
-                      console.log(`Date selected: ${formattedDate}`);
-                      setSelectedDate(formattedDate); // Update the selectedDate state
+                      setSelectedDate(formattedDate);
                     }
                   }}
                   renderInput={(params) => (
@@ -881,15 +863,15 @@ export default function App() {
 
       {/* Floating Chatbot Button */}
       <div className="fixed bottom-4 right-4 z-50">
-        <ChatbotButton />
-      </div>
-      <OEEVisualization
-        oeeData={oeeData}
-        availabilityReal={availabilityGaugeData}
-        performanceReal={performanceGaugeData}
-        qualityReal={qualityGaugeData}
-        oeeRatio={oeeGaugeData}
-      />
+          <ChatbotButton
+            variant="NOCHAT"
+            onClick={() => setIsChatOpen((prev) => !prev)} // Toggle chat window visibility
+          />
+        </div>
+        <ChatWindow
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)} // Close the chat window
+        />
     </div>
       </ThemeProvider>
   );
