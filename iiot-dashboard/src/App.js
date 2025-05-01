@@ -1,20 +1,14 @@
+// React and Material-UI imports
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import Main from './components/Main';
-import SVG from './components/SVG';
-import Footer from './components/Footer';
-import { Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Dashboard from './pages/Dashboard';
-import Layout from './components/Layout';
+import { createTheme } from '@mui/material/styles';
 import { parseISO } from 'date-fns'; 
 import { DatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import esLocale from 'date-fns/locale/es';
 import './App.css';
-//FRAMER
+
+// Framer components for UI elements
 import './framer/styles.css';
 import GaugeChartFramerComponent from './framer/gauge-chart';
 import Panel from './framer/panel';
@@ -26,14 +20,11 @@ import LineChart from './framer/line-chart';
 import TimelineChart from './framer/timeline-chart';
 import StationDropdown from './framer/station-dropdown';
 import ShiftDropdown from './framer/shift-dropdown';
-import ButtonCalendar from './framer/button-calendar';
-import ReturnDateButton from './framer/return-date-button';
-// Configure AWS Amplify
+
+// AWS Amplify configuration
 import { Amplify } from '@aws-amplify/core';
 import ReactApexChart from "react-apexcharts";
-import Text from './../node_modules/@svgdotjs/svg.js/src/elements/Text';
-import { CircularProgressbar } from "react-circular-progressbar";
-import { fetchOEEData, processOEEData } from './utils/oeeUtils'; // Move fetch and process logic to a utility file
+import { fetchOEEData } from './utils/oeeUtils';
 
 Amplify.configure({
   API: {
@@ -52,22 +43,17 @@ Amplify.configure({
   }
 });
 
+// Define a dark theme for the application
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: {
-      main: '#90caf9',
-    },
-    secondary: {
-      main: '#f48fb1',
-    },
-    background: {
-      default: '#121212',
-      paper: '#1e1e1e',
-    },
+    primary: { main: '#90caf9' },
+    secondary: { main: '#f48fb1' },
+    background: { default: '#121212', paper: '#1e1e1e' },
   },
 });
 
+// Component to render a timeline chart for state data
 const StateTimeline = ({ data }) => {
   const options = {
     chart: { type: "rangeBar" },
@@ -107,6 +93,7 @@ const StateTimeline = ({ data }) => {
   return <ReactApexChart options={options} series={data.series} type="rangeBar" height={100} />;
 };
 
+// Component to display OEE metrics and timeline
 const OEEVisualization = ({ oeeData, availabilityReal, performanceReal, qualityReal, oeeRatio }) => {
   return (
     <div>
@@ -138,44 +125,74 @@ function convertUTCDateToLocalDate(date) {
   return newDate;
 }
 
+// Utility function to map OEE state to a line bar variant
 const getLineBarVariantFromLastState = (actualOEEstate) => {
-  if (!actualOEEstate) {
-    return "Stop"; // Fallback variant if no state is available
-  }
-
-  // Map the state to the corresponding variant
   switch (actualOEEstate) {
-    case "G": // Green
-      return "Good";
-    case "Y": // Yellow
-      return "Low";
-    case "R": // Red
-    default:
-      return "Default"; // Fallback variant
+    case "G": return "Good"; // Green
+    case "Y": return "Low";  // Yellow
+    case "R": return "Default"; // Red
+    default: return "Stop";  // Fallback
   }
 };
 
+// Main App component
 export default function App() {
+  // State variables for theme, dropdowns, and OEE data
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [stationTitle, setStationTitle] = useState('Etiquetado'); // State for StationDropdown title
-  const [shiftTitle, setShiftTitle] = useState('Turno matutino'); // State for ShiftDropdown title
+
+  const [actualOEEstate, setActualOEState] = useState("G");
+  const [variant, setVariant] = useState(getLineBarVariantFromLastState("G")); // Initialize with default variant
+
+  // Update the variant whenever actualOEEstate changes
+  useEffect(() => {
+    const updatedVariant = getLineBarVariantFromLastState(actualOEEstate);
+    setVariant(updatedVariant);
+    console.log(`useEffect - actualOEEstate: ${actualOEEstate}, updatedVariant: ${updatedVariant}`); // Debug log
+  }, [actualOEEstate]);
+
+  // Debug log to check the variant during rendering
+  console.log(`Render - variant: ${variant}`);
+
+  const [station, setStation] = useState("Etiquetado");
+  const [turno, setTurno] = useState("Turno matutino");
   const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString('es-MX', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
   }).split('/').reverse().join('-')); // State for ButtonCalendar date
 
-  const [turno, setTurno] = useState("Turno matutino");
-  const [station, setStation] = useState("Etiquetado");
-
-  const [actualOEEstate, setActualOEState] = useState("G");
-
+  const [shiftId, setShiftId] = useState(1);
+  const [assetId, setAssetId] = useState(1);
   const [oeeData, setOEEData] = useState(null);
   const [availabilityReal, setAvailabilityReal] = useState(0);
   const [performanceReal, setPerformanceReal] = useState(0);
   const [qualityReal, setQualityReal] = useState(0);
   const [oeeRatio, setOEERatio] = useState(0);
 
+  const stationToId = {
+    "Etiquetado": 1,
+    "Estación 01": 2,
+    "Estación 02": 3,
+  };
+
+  const turnoToId = {
+    "Turno matutino": 1,
+    "Turno vespertino": 2,
+    "Turno nocturno": 3,
+  };
+
+  useEffect(() => {
+    const shiftId = turnoToId[turno]; // Map turno to shift ID
+    const assetId = stationToId[station]; // Map station to asset ID
+  
+    // Format start and end times for the selected date
+    const startTime = `${selectedDate} 00:00:00`;
+    const endTime = `${selectedDate} 23:59:59`;
+  
+    // Call the API with the updated parameters
+    fetchAndProcessData(shiftId, assetId, startTime, endTime);
+  }, [selectedDate, station, turno]); // Dependencies to trigger the effect
+  
   const [availabilityGaugeData, setAvailabilityGaugeData] = useState(0);
   const [performanceGaugeData, setPerformanceGaugeData] = useState(0);
   const [qualityGaugeData, setQualityGaugeData] = useState(0);
@@ -222,33 +239,33 @@ export default function App() {
       tooltip: {
         custom: function (opts) {
           const from = opts.y1
-            ? new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          ? new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
             : "N/A";
           const to = opts.y2
-            ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-            : "N/A";
+          ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : "N/A";
 
           const label =
-            opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
+          opts.ctx.w.config.series[opts.seriesIndex]?.data[opts.dataPointIndex]?.label || "N/A";
 
           return `
-            <div class="apexcharts-tooltip-rangebar">
+          <div class="apexcharts-tooltip-rangebar">
               <span style="color: ${opts.color}">${label}</span>
               <div>${from} - ${to}</div>
-            </div>
+              </div>
           `;
         },
       },
       colors: ["#28a745", "#ffc107", "#dc3545"], // Green, Yellow, Red
     },
   });
-
-  const fetchAndProcessData = async () => {
+  
+  const fetchAndProcessData = async (shiftId, assetId, startTime, endTime) => {
     try {
       // Fetch data from the API
-      const data = await fetchOEEData(1, 1, "2025-04-10 00:00:00", "2025-04-10 23:59:00");
+      const data = await fetchOEEData(shiftId, assetId, startTime, endTime);
       console.log("Fetched OEE Data:", data);
-
+    
       // Validate the structure of the data
       if (!data || !data.performance || !data.quality || !data.availability) {
         console.error("Invalid data structure:", data);
@@ -259,20 +276,15 @@ export default function App() {
       const timestampsRaw = data.timestamps;
       console.log("Original Timestamps:", timestampsRaw);
       const timestamps = timestampsRaw.map((t) => {
-        // Parse the timestamp as local time
-        const [datePart, timePart] = t.split(" "); // Split into date and time
-        const [year, month, day] = datePart.split("-").map(Number); // Extract year, month, day
-        const [hours, minutes, seconds] = timePart.split(":").map(Number); // Extract hours, minutes, seconds
+        // Validate the timestamp format
+        const isValidTimestamp = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(t); // Regex to match the format "YYYY-MM-DD HH:mm:ss"
 
-        // Create a Date object in local time
-        const localDate = new Date(year, month - 1, day, hours, minutes, seconds);
-
-        if (isNaN(localDate.getTime())) {
-          console.error(`Invalid date format: ${t}`);
+        if (!isValidTimestamp) {
+          console.error(`Invalid timestamp format: ${t}`);
           return null;
         }
 
-        return localDate.getTime(); // Return the timestamp in milliseconds
+        return t; // Keep the original timestamp format
       }).filter((t) => t !== null); // Remove null entries
 
       console.log("Processed Timestamps:", timestamps); // Debug log
@@ -326,31 +338,37 @@ export default function App() {
         a * performanceRatio[i] * qualityRatio[i]
       );
 
-      // === Calculate relative states ===
-      const statesRelative = productionMeasures.map((p) =>
-        productionGoalPerMinute ? p / productionGoalPerMinute : 0
+      // === Calculate categorical states ===
+      const statesRelative = data.performance.production_measures.map((p) =>
+        data.performance.production_goal ? p / (data.performance.production_goal / data.availability.minutes_goal) : 0
       );
 
-      // === Calculate categorical states ===
       const states = statesRelative.map((r) => {
-        if (r >= statusLimit) return "G";
+        if (r >= data.status.status_limit) return "G";
         if (r > 0) return "Y";
         return "R";
       });
 
       // Set actualOEEstate to the last value of the states array
       if (states.length > 0) {
-        setActualOEState(states[states.length]);
+        const lastState = states[states.length-1]; // Correctly access the last element
+        setActualOEState(lastState); // Update the state
+        console.log("actualOEEstate updated:", lastState); // Debug log
       }
 
       // Print actualOEEstate and the last value in states
       console.log("actualOEEstate:", states[states.length - 1]);
-      console.log("Last value in states:", states[states.length - 1]);
+      console.log("Last value in states:", states[states.length]);
 
       const combinedStateTimelineData = states.map((state, index) => {
-        const startTime = timestamps[index] ? new Date(timestamps[index]).getTime() : null;
-        const endTime = timestamps[index + 1] ? new Date(timestamps[index + 1]).getTime() : startTime;
-
+        const startTime = timestamps[index]
+          ? new Date(new Date(timestamps[index]).getTime() - 6 * 60 * 60 * 1000).getTime() // Subtract 6 hours
+          : null;
+    
+        const endTime = timestamps[index + 1]
+          ? new Date(new Date(timestamps[index + 1]).getTime() - 6 * 60 * 60 * 1000).getTime() // Subtract 6 hours
+          : startTime;
+          
         if (!startTime || isNaN(startTime) || !endTime || isNaN(endTime)) {
           console.error(`Invalid timestamps at index ${index}:`, timestamps[index], timestamps[index + 1]);
           return null; // Skip invalid data
@@ -370,9 +388,14 @@ export default function App() {
       console.log("Combined State Timeline Data:", combinedStateTimelineData);
 
       // Get the first and last timestamps
-      const minTimestamp = timestamps.length > 0 ? new Date(timestamps[0]).getTime() : null;
-      const maxTimestamp = timestamps.length > 0 ? new Date(timestamps[timestamps.length - 1]).getTime() : null;
+      const minTimestamp = timestamps.length > 0
+        ? new Date(new Date(timestamps[0]).getTime() - 6 * 60 * 60 * 1000).getTime()
+        : null;
 
+      const maxTimestamp = timestamps.length > 0
+        ? new Date(new Date(timestamps[timestamps.length - 1]).getTime() - 6 * 60 * 60 * 1000).getTime()
+        : null;
+        
       setStateTimeline({
         series: [
           {
@@ -411,10 +434,20 @@ export default function App() {
           tooltip: {
             custom: function (opts) {
               const from = opts.y1
-                ? new Date(opts.y1).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                ? new Date(opts.y1 + 6 * 60 * 60 * 1000).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false, // Use 24-hour format
+                  })
                 : "N/A";
+
+              // Add 6 hours to the 'to' time (y2) and format it
               const to = opts.y2
-                ? new Date(opts.y2).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                ? new Date(opts.y2 + 6 * 60 * 60 * 1000).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false, // Use 24-hour format
+                  })
                 : "N/A";
 
               const label =
@@ -522,6 +555,12 @@ export default function App() {
       console.error("Error fetching or processing OEE data:", error);
     }
   };
+
+  useEffect(() => {
+    const updatedVariant = getLineBarVariantFromLastState(actualOEEstate);
+    setVariant(updatedVariant);
+    console.log(`useEffect - actualOEEstate: ${actualOEEstate}, updatedVariant: ${updatedVariant}`); // Debug log
+  }, [actualOEEstate]);
 
   useEffect(() => {
     // Check for the browser's theme preference
@@ -739,11 +778,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    fetchAndProcessData();
-  }, []);
-
-  useEffect(() => {
-    console.log("Timestamps:", timestamps);
+    //console.log("Timestamps:", timestamps);
   }, [timestamps]);
 
   return (
@@ -769,7 +804,7 @@ export default function App() {
         <div className={`flex-1 p-6 overflow-auto padding ${isDarkMode ? 'dark' : ''}`}>
           <div className="line-bar-container padding">
             <LineBar
-              variant={getLineBarVariantFromLastState(actualOEEstate)} // Pass actualOEEstate
+              variant={variant} // Use the dynamically updated variant
               style={{ width: "100%" }}
               className={`${isDarkMode ? "dark" : ""}`}
             />
