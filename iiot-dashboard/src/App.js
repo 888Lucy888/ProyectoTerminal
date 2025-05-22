@@ -633,9 +633,17 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              yaxis: {
+              title: {
+                text: "Minutos", // Label the Y-axis as "Piezas"
+              },
+              labels: {
+                formatter: (value) => `${value} min`, // Display absolute numbers
+              },
+              },
               tooltip: {
                 y: {
-                  formatter: (value) => `${value}`,
+                  formatter: (value) => `${value} min`,
                 },
               },
               colors: ["#28a745", "#00A5CF"], // Green and Blue
@@ -652,6 +660,14 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              yaxis: {
+              title: {
+                text: "Piezas", // Label the Y-axis as "Piezas"
+              },
+              labels: {
+                formatter: (value) => `${value}  pzs`, // Display absolute numbers
+              },
+              },
               tooltip: {
                 y: {
                   formatter: (value) => `${value} pzs`, // Show "piezas" in the tooltip
@@ -671,6 +687,14 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              yaxis: {
+              title: {
+                text: "Piezas", // Label the Y-axis as "Piezas"
+              },
+              labels: {
+                formatter: (value) => `${value} pzs`, // Display absolute numbers
+              },
+            },
               tooltip: {
                 y: {
                   formatter: (value) => `${value} pzs`, // Show "piezas" in the tooltip
@@ -687,6 +711,14 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              yaxis: {
+              title: {
+                text: "Porcentaje", // Label the Y-axis as "Piezas"
+              },
+              labels: {
+                formatter: (value) => `${value}%`, // Display absolute numbers
+              },
+            },
               tooltip: {
                 y: {
                   formatter: (value) => `${value}%`,
