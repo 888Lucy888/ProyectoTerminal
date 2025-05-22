@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./ChatWindow.css"; // Add styles for the chat window
 
-const ChatWindow = ({ isOpen, onClose, isDarkMode }) => {
+const ChatWindow = ({ isOpen, isDarkMode }) => {
   const [messages, setMessages] = useState([]); // Chat log
   const [inputText, setInputText] = useState(""); // User input
   const chatContainerRef = useRef(null); // Reference to the chat container for scrolling
@@ -16,14 +16,14 @@ const ChatWindow = ({ isOpen, onClose, isDarkMode }) => {
 
     try {
       // Send the user message to the API
-      const response = await fetch("https://your-api-endpoint.com/chat", {
+      const response = await fetch("https://zi7afigz5e.execute-api.us-east-1.amazonaws.com/dev/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: inputText }),
+        body: JSON.stringify({ prompt: inputText }), // Send the user's input as the "prompt"
       });
 
       const data = await response.json();
-      const botMessage = { sender: "bot", text: data.reply }; // Assume API returns { reply: "response text" }
+      const botMessage = { sender: "bot", text: data.response }; // Extract the "response" field from the API
       setMessages((prevMessages) => [...prevMessages, botMessage]); // Add bot response to chat log
     } catch (error) {
       console.error("Error sending message:", error);
