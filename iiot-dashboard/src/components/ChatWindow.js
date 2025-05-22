@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./ChatWindow.css"; // Add styles for the chat window
 
-const ChatWindow = ({ isOpen, onClose }) => {
+const ChatWindow = ({ isOpen, onClose, isDarkMode }) => {
   const [messages, setMessages] = useState([]); // Chat log
   const [inputText, setInputText] = useState(""); // User input
   const chatContainerRef = useRef(null); // Reference to the chat container for scrolling
@@ -42,7 +42,7 @@ const ChatWindow = ({ isOpen, onClose }) => {
   if (!isOpen) return null; // Do not render the chat window if it's closed
 
   return (
-    <div className="chat-window">
+    <div className={`chat-window ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="chat-header">
         <h3>Chat</h3>
       </div>

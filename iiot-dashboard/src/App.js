@@ -79,8 +79,6 @@ export default function App() {
     console.log(`useEffect - actualOEEstate: ${actualOEEstate}, updatedVariant: ${updatedVariant}`); // Debug log
   }, [actualOEEstate]);
 
-  // Debug log to check the variant during rendering
-  console.log(`Render - variant: ${variant}`);
 
   const [station, setStation] = useState("Envasado");
   const [turno, setTurno] = useState("Turno matutino");
@@ -203,7 +201,6 @@ export default function App() {
 
       // === Extract data from the new format ===
       const timestampsRaw = data.timestamps;
-      console.log("Original Timestamps:", timestampsRaw);
       const timestamps = timestampsRaw.map((t) => {
         // Validate the timestamp format
         const isValidTimestamp = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(t); // Regex to match the format "YYYY-MM-DD HH:mm:ss"
@@ -216,7 +213,6 @@ export default function App() {
         return t; // Keep the original timestamp format
       }).filter((t) => t !== null); // Remove null entries
 
-      console.log("Processed Timestamps:", timestamps); // Debug log
       setTimestamps(timestamps); // Update state
 
       const minutesGoal = data.availability.minutes_goal || 1; // Avoid division by zero
@@ -281,13 +277,9 @@ export default function App() {
       // Set actualOEEstate to the last value of the states array
       if (states.length > 0) {
         const lastState = states[states.length-1]; // Correctly access the last element
+        console.log(states);
         setActualOEState(lastState); // Update the state
-        console.log("actualOEEstate updated:", lastState); // Debug log
       }
-
-      // Print actualOEEstate and the last value in states
-      console.log("actualOEEstate:", states[states.length - 1]);
-      console.log("Last value in states:", states[states.length]);
 
       const combinedStateTimelineData = states.map((state, index) => {
         const startTime = timestamps[index]
@@ -313,8 +305,6 @@ export default function App() {
           label, // Add the label for the tooltip
         };
       }).filter((data) => data !== null); // Remove null entries
-
-      console.log("Combined State Timeline Data:", combinedStateTimelineData);
 
       // Get the first and last timestamps
       const minTimestamp = timestamps.length > 0
@@ -429,14 +419,6 @@ export default function App() {
       setPerformanceGaugeData(performanceReal[performanceReal.length - 1]);
       setQualityGaugeData(qualityReal[qualityReal.length - 1]);
       setOeeGaugeData(oeeRatio[oeeRatio.length - 1]);
-
-      // Log processed chart data
-      console.log("Chart Data:", {
-        availabilityChartData,
-        performanceChartData,
-        qualityChartData,
-        oeeChartData,
-      });
 
       // === Update gauge data ===
       setGaugeData([
@@ -641,9 +623,6 @@ export default function App() {
     }
 
     if (target) {
-      console.log("LineChart clicked");
-      console.log("Target innerText:", target.innerText); // Print the inner text of the target
-
       switch (target.innerText) {
         case "Disponibilidad":
           setLineChartData({
@@ -654,6 +633,11 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              tooltip: {
+                y: {
+                  formatter: (value) => `${value}`,
+                },
+              },
               colors: ["#28a745", "#00A5CF"], // Green and Blue
             },
           });
@@ -668,6 +652,11 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              tooltip: {
+                y: {
+                  formatter: (value) => `${value} pzs`, // Show "piezas" in the tooltip
+                },
+              },
               colors: ["#28a745", "#00A5CF"], // Green and Blue
             },
           });
@@ -682,6 +671,11 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              tooltip: {
+                y: {
+                  formatter: (value) => `${value} pzs`, // Show "piezas" in the tooltip
+                },
+              },
               colors: ["#28a745", "#00A5CF"], // Green and Blue
             },
           });
@@ -693,6 +687,11 @@ export default function App() {
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
+              tooltip: {
+                y: {
+                  formatter: (value) => `${value}%`,
+                },
+              },
               colors: ["#00A5CF"],
             },
           });
@@ -865,12 +864,13 @@ export default function App() {
       <div className="fixed bottom-4 right-4 z-50">
           <ChatbotButton
             variant="NOCHAT"
-            onClick={() => setIsChatOpen((prev) => !prev)} // Toggle chat window visibility
+            onClick={() => setIsChatOpen((prev) => !prev)}
           />
         </div>
         <ChatWindow
           isOpen={isChatOpen}
-          onClose={() => setIsChatOpen(false)} // Close the chat window
+          onClose={() => setIsChatOpen(false)}
+          isDarkMode={isDarkMode}
         />
     </div>
       </ThemeProvider>
