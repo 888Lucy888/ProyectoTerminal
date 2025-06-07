@@ -903,6 +903,10 @@ export default function App() {
           isOpen={isChatOpen}
           onClose={() => setIsChatOpen(false)}
           isDarkMode={isDarkMode}
+          shiftId={shiftId}
+          assetId={assetId}
+          startTime={`${selectedDate} 00:00:00`}
+          endTime={`${selectedDate} 23:59:59`}
         />
     </div>
       </ThemeProvider>

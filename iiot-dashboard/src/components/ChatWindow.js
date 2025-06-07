@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./ChatWindow.css"; // Add styles for the chat window
 
-const ChatWindow = ({ isOpen, isDarkMode }) => {
+const ChatWindow = ({ isOpen, isDarkMode, shiftId, assetId, startTime, endTime }) => {
   const [messages, setMessages] = useState([]); // Chat log
   const [inputText, setInputText] = useState(""); // User input
   const chatContainerRef = useRef(null); // Reference to the chat container for scrolling
@@ -19,7 +19,13 @@ const ChatWindow = ({ isOpen, isDarkMode }) => {
       const response = await fetch("https://zi7afigz5e.execute-api.us-east-1.amazonaws.com/dev/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: inputText }), // Send the user's input as the "prompt"
+        body: JSON.stringify({
+          prompt: inputText,
+          shiftId,
+          assetId,
+          startTime,
+          endTime
+        }),  
       });
 
       const data = await response.json();
