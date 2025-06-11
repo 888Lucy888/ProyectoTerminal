@@ -21,10 +21,10 @@ const ChatWindow = ({ isOpen, isDarkMode, shiftId, assetId, startTime, endTime }
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: inputText,
-          shiftId,
-          assetId,
-          startTime,
-          endTime
+          shift_id: String(shiftId),
+          asset_id: String(assetId),
+          start_time: startTime,
+          end_time: endTime
         }),  
       });
 
