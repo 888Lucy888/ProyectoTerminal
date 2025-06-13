@@ -1,0 +1,151 @@
+element.style {
+}
+html body {
+    background: var(--token-828d2e70-a56c-46d5-8a2d-e13e496f49c8, rgb(242, 242, 242));
+}
+body {
+    --framer-fresco-monospace-font-family: "Input Mono", Menlo, monospace;
+    --framer-fresco-sansSerif-font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif, emoji, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --framer-fresco-sansSerifWithoutEmoji-font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --framer-fresco-labelSmall-font-size: 9px;
+    --framer-fresco-label-font-size: 10px;
+    --framer-fresco-labelLarge-font-size: 11px;
+    --framer-fresco-base-font-size: 12px;
+    --framer-fresco-heading-font-size: 13px;
+    --framer-fresco-textLarge-font-size: 14px;
+    --framer-fresco-base-font-weight: 500;
+    --framer-fresco-baseActive-font-weight: 500;
+    --framer-fresco-heading-font-weight: 600;
+    --framer-fresco-headingBold-font-weight: 700;
+    --framer-fresco-headingExtraBold-font-weight: 800;
+}
+body {
+    --framer-fresco-tint-color: #0099ff;
+    --framer-fresco-tintDark-color: #0088ff;
+    --framer-fresco-tintExtraDark-color: #1188ff;
+    --framer-fresco-tintDimmed-color: rgba(0, 153, 255, .1);
+    --framer-fresco-tintGradientStart-color: rgba(0, 153, 255, .4);
+    --framer-fresco-tintGradientEnd-color: rgba(0, 153, 255, .8);
+    --framer-fresco-componentTint-color: #8855ff;
+    --framer-fresco-componentTintDark-color: #7744FF;
+    --framer-fresco-componentTintExtraDark-color: #7733ff;
+    --framer-fresco-componentTintDimmed-color: rgba(136, 85, 255, .1);
+    --framer-fresco-componentTintGradientStart-color: rgba(136, 85, 255, .4);
+    --framer-fresco-componentTintGradientEnd-color: rgba(136, 85, 255, .8);
+    --framer-fresco-componentTintDimmedDrag-color: rgba(136, 85, 255, .2);
+    --framer-fresco-componentTintDimmedActive-color: rgba(136, 85, 255, .3);
+    --framer-fresco-componentTintLight-color: #B89AFF;
+    --framer-fresco-errorTint-color: #ff3366;
+    --framer-fresco-errorTintDimmed-color: rgba(255, 51, 102, .1);
+    --framer-fresco-warningTint-color: #FFBB00;
+    --framer-fresco-warningTintDimmed-color: rgba(255, 187, 0, .2);
+    --framer-fresco-warningText-color: #FF9900;
+    --framer-fresco-graphicTint-color: #6666ff;
+    --framer-fresco-graphicTintDark-color: #6644ff;
+    --framer-fresco-graphicTintDimmed-color: rgba(102, 102, 255, .15);
+    --framer-fresco-graphicTintGradientStart-color: rgba(102, 102, 255, .4);
+    --framer-fresco-graphicTintGradientEnd-color: rgba(102, 102, 255, .8);
+    --framer-fresco-beta-color: #6666ff;
+    --framer-fresco-panelTitle-color: #333333;
+    --framer-fresco-panelRowTitle-color: #666666;
+    --framer-fresco-panelSectionTitle-color: #999999;
+    --framer-fresco-panelText-color: #666666;
+    --framer-fresco-panelDescription-color: #999999;
+    --framer-fresco-panelTextSelected-color: #ffffff;
+    --framer-fresco-panelBackground-color: #ffffff;
+    --framer-fresco-panelDivider-color: #eeeeee;
+    --framer-fresco-panelSectionHeaderIcon-color: #222222;
+    --framer-fresco-panelChevron-color: #999999;
+    --framer-fresco-panelSubtitle-color: #666666;
+    --framer-fresco-panelPressedState-color: #666666;
+    --framer-fresco-nuxPanelHeaderTitle-color: #222222;
+    --framer-fresco-nuxPanelStepTitle-color: #666666;
+    --framer-fresco-nuxPanelStepTitleDisabled-color: #999999;
+    --framer-fresco-nuxPanelStepTitleHighlighted-color: #677680;
+    --framer-fresco-nuxPanelStepNumberHighlighted-color: #1A303D;
+    --framer-fresco-nuxPanelSubtitle-color: #999999;
+    --framer-fresco-nuxPanelSubtitleDisabled-color: #cccccc;
+    --framer-fresco-nuxPanelButton-color: #ffffff;
+    --framer-fresco-nuxPanelButtonDisabled-color: #f2f2f2;
+    --framer-fresco-nuxPanelCard-color: #fafafa;
+    --framer-fresco-nuxPanelCheckmark-color: #aaaaaa;
+    --framer-fresco-assetsRowCodeFileText-color: #0099ff;
+Show all properties (869 more)
+}
+<style>
+@supports (aspect-ratio: 1) {
+    body {
+        --framer-aspect-ratio-supported: auto;
+    }
+}
+<style>
+body {
+    --framer-will-change-override: none;
+}
+@supports (aspect-ratio: 1) {
+    body {
+        --framer-aspect-ratio-supported: auto;
+    }
+}
+body {
+    --framer-will-change-override: none;
+}
+@media (prefers-color-scheme: dark) {
+    body {
+        --token-931eace7-06cb-44e8-ac4a-af55fae6144b: rgb(33, 33, 33);
+        --token-828d2e70-a56c-46d5-8a2d-e13e496f49c8: rgb(15, 15, 15);
+        --token-48c95b4e-44f6-4ac3-b044-c0cab34489dd: rgb(255, 255, 255);
+        --token-429567dd-6d97-4365-a8f6-bcd106b8a414: rgb(33, 33, 33);
+        --token-aa304e64-8f1c-4e9a-a74f-03393a864335: rgb(8, 122, 162);
+        --token-3a1a8c16-c9ac-4c6f-8a3e-e68d5f46575c: rgb(217, 185, 24);
+        --token-418b2c45-549e-498c-977f-49e88a398550: rgb(255, 255, 255);
+        --token-ae763b4d-0850-43bc-acae-ea5050cc491d: rgb(173, 173, 173);
+        --token-b1712b2c-630f-4b75-9bf0-f2facf1ce20c: rgba(199, 6, 6, .3);
+        --token-eb9f2500-18d9-4fc2-9121-acbe433c2ab4: rgba(33, 181, 40, .3);
+        --token-a736bfdf-38ad-40b3-8ea8-63ab4f476a77: rgb(97, 97, 97);
+        --token-f4ce0a50-c65b-43de-9d42-458ace69dba3: rgba(217, 185, 24, .5);
+        --token-4bd2e29c-7da8-4c62-8d92-a0eae155ad0d: rgb(38, 38, 38);
+        --token-1cc31cbf-3fd9-4f03-9a8f-5577c8364f43: rgb(61, 61, 61);
+    }
+}
+body {
+    --token-931eace7-06cb-44e8-ac4a-af55fae6144b: rgb(255, 255, 255);
+    --token-828d2e70-a56c-46d5-8a2d-e13e496f49c8: rgb(242, 242, 242);
+    --token-48c95b4e-44f6-4ac3-b044-c0cab34489dd: rgb(33, 33, 33);
+    --token-429567dd-6d97-4365-a8f6-bcd106b8a414: rgb(255, 255, 255);
+    --token-aa304e64-8f1c-4e9a-a74f-03393a864335: rgb(8, 122, 162);
+    --token-c168b98c-2e59-445e-b5bc-c16129fabd04: rgb(0, 153, 8);
+    --token-3a1a8c16-c9ac-4c6f-8a3e-e68d5f46575c: rgb(224, 187, 2);
+    --token-480118fa-fa8f-477c-8519-b819382d936d: rgb(199, 6, 6);
+    --token-68f4669e-4ccc-4b3c-b832-ca79b84371b8: rgb(0, 165, 207);
+    --token-418b2c45-549e-498c-977f-49e88a398550: rgb(23, 42, 79);
+    --token-ae763b4d-0850-43bc-acae-ea5050cc491d: rgb(61, 61, 61);
+    --token-b1712b2c-630f-4b75-9bf0-f2facf1ce20c: rgba(199, 6, 6, .3);
+    --token-eb9f2500-18d9-4fc2-9121-acbe433c2ab4: rgba(33, 181, 40, .3);
+    --token-a736bfdf-38ad-40b3-8ea8-63ab4f476a77: rgb(207, 207, 207);
+    --token-f4ce0a50-c65b-43de-9d42-458ace69dba3: rgba(224, 187, 2, .5);
+    --token-4bd2e29c-7da8-4c62-8d92-a0eae155ad0d: rgb(207, 207, 207);
+    --token-32419dcf-b78f-49f7-8898-145e2bf81fbf: rgb(0, 165, 207);
+    --token-d966a7d2-1894-4a88-955d-acec82409d44: rgba(0, 165, 207, .5);
+    --token-64079a37-4954-41cb-b95d-2e1da3e7982e: rgba(0, 165, 207, .2);
+    --token-1cc31cbf-3fd9-4f03-9a8f-5577c8364f43: rgb(227, 227, 227);
+    --token-b7aa377c-5de7-4c27-b9c7-39bcceaed26a: rgb(23, 42, 79);
+}
+body, input, textarea, select, button {
+    font-size: 12px;
+    font-family: sans-serif;
+}
+html, body, #main {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: inherit;
+}
+
+body {
+    display: block;
+    margin: 8px;
+}

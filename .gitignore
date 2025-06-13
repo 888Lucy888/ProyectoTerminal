@@ -2,3 +2,20 @@
 .env
 aider-env/
 psa-sabia-llm-dv-4329cd2ee0ae.json
+node_modules
+prompt.txt
+package-lock.json
+package.json
+lucyenv
+.aider.input.history
+.aider.chat.history.md
+WITHAMAZON
+iiot-dashboard/node_modules
+aider_chat/
+.aider.tags.cache.v3
+.aider.tags.cache.v4
+aider_chat_l/
+packageL.json
+promptL.txt
+tall git-filter-repo
+.envL
