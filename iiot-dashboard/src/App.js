@@ -707,21 +707,21 @@ export default function App() {
 
         case "OEE %":
           setLineChartData({
-            series: [{ name: "Eficiencia Global (OEE)", data: oeeGaugeDataArray.map((value, index) => ({ x: timestamps[index], y: value * 100 })) }],
+            series: [{ name: "Eficiencia Global (OEE)", data: oeeGaugeDataArray.map((value, index) => ({ x: timestamps[index], y: (value * 100).toFixed(2) })) }],
             options: {
               ...lineChartData.options,
               xaxis: { type: "category" },
               yaxis: {
               title: {
-                text: "Porcentaje", // Label the Y-axis as "Piezas"
+                text: "Porcentaje",
               },
               labels: {
-                formatter: (value) => `${value}%`, // Display absolute numbers
+                formatter: (value) => `${value.toFixed(2)}%`, // Display absolute numbers
               },
             },
               tooltip: {
                 y: {
-                  formatter: (value) => `${value}%`,
+                  formatter: (value) => `${value.toFixed(2)}%`,
                 },
               },
               colors: ["#00A5CF"],
