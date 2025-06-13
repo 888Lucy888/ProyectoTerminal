@@ -1,0 +1,141 @@
+.chat-window {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #00A5CF;
+    color: #ffffff;
+    border-bottom: 1px solid #ccc;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    max-width: 80%;
+}
+
+.user-message {
+    background-color: #00A5CF;
+    color: #ffffff;
+    align-self: flex-end;
+}
+
+.bot-message {
+    background-color: #e9ecef;
+    color: #000000;
+    align-self: flex-start;
+}
+
+.chat-input-container {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.chat-input-container input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.chat-input-container .send-button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    background-color: #00A5CF;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Dark mode styles for the chat window */
+.chat-window.dark-mode {
+    background-color: #000000;
+    /* Black background */
+    color: #ffffff;
+    /* White text */
+}
+
+.chat-window.dark-mode .chat-header {
+    background-color: #333333;
+    /* Darker header background */
+    color: #ffffff;
+    /* White text */
+}
+
+.chat-window.dark-mode .chat-messages {
+    background-color: #1a1a1a;
+    /* Darker background for messages */
+    color: #ffffff;
+    /* White text */
+}
+
+.chat-window.dark-mode .user-message {
+    background-color: #00A5CF;
+    /* Slightly lighter blue for user messages */
+    color: #ffffff;
+    /* White text */
+}
+
+.chat-window.dark-mode .bot-message {
+    background-color: #444444;
+    /* Dark gray for bot messages */
+    color: #ffffff;
+    /* White text */
+}
+
+.chat-window.dark-mode .chat-input-container {
+    background-color: #1a1a1a;
+    /* Darker background for input */
+    border-top: 1px solid #333333;
+    /* Subtle border */
+}
+
+.chat-window.dark-mode .chat-input-container input {
+    background-color: #333333;
+    /* Dark input background */
+    color: #ffffff;
+    /* White text */
+    border: 1px solid #555555;
+    /* Subtle border */
+}
+
+.chat-window.dark-mode .chat-input-container .send-button {
+    background-color: #00A5CF;
+    /* Blue send button */
+    color: #ffffff;
+    /* White text */
+    border: none;
+}

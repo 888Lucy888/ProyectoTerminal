@@ -1,0 +1,301 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #F2F2F2;
+  /* Default light mode background */
+}
+
+html.dark,
+body.dark {
+  background-color: #000000;
+  /* Dark mode background */
+}
+
+#root {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  text-align: center;
+}
+
+.padding {
+  padding: 0.5%;
+}
+
+.dashboard-container {
+  padding: 20px;
+}
+
+.widget {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.widget-title {
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #90caf9;
+}
+
+.gauge-container {
+  display: flex;
+  flex-direction: row;
+  /* Align gauges in a row */
+  justify-content: space-between;
+  /* Distribute gauges evenly */
+  align-items: center;
+  /* Align gauges vertically */
+  margin-top: 16px;
+  gap: 16px;
+  /* Optional: Add some space above the gauges */
+}
+
+.gauge-container>*:first-child {
+  margin-left: 20px;
+  /* Add a bigger gap on the left for the first gauge */
+}
+
+.time-graph-container {
+  height: 300px;
+}
+
+.chat-container {
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #2d2d2d;
+  border-radius: 4px;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 10px;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 18px;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.user-message {
+  background-color: #0084ff;
+  color: white;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.bot-message {
+  background-color: #3a3a3a;
+  color: white;
+  align-self: flex-start;
+}
+
+/* Ensure the main content area uses flexbox */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.bottom-4 {
+  bottom: 1rem;
+}
+
+.right-4 {
+  right: 1rem;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+.line-chart-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-left: 16px;
+  /* Adds a small gap from the left */
+  padding: 16px;
+  /* Adds padding around the LineChart */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.line-chart-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-left: 16px;
+  /* Adds a small gap from the left */
+  padding: 16px;
+  /* Adds padding around the LineChart */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.time-chart-wrapper {
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-left: 16px;
+  /* Adds a small gap from the left */
+  padding: 16px;
+  margin-top: 10%;
+  /* Adds padding around the LineChart */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.time-chart-wrapper-graph {
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+  margin-top: -15%;
+  /* Adds a small gap from the left */
+  width: auto;
+  /* Ensures the width adjusts to the content */
+  box-sizing: border-box;
+  /* Includes padding in width/height calculations */
+}
+
+.line-chart-wrapper-graph {
+  /* Aligns the LineChart to the left */
+  align-items: center;
+  /* Vertically centers the LineChart */
+
+}
+
+.navigation-bar-wrapper {
+  width: 100%;
+  /* Make the navigation bar span the full width */
+  display: flex;
+  /* Enable flexbox for centering */
+  justify-content: center;
+  /* Center horizontally */
+  align-items: center;
+  /* Center vertically (if needed) */
+  position: relative;
+  /* Ensure it stays in the normal document flow */
+  z-index: 10;
+  /* Optional: Ensure it stays above other elements */
+}
+
+.line-chart-container {
+  position: relative;
+  /* Make the container a positioning context */
+  width: 100%;
+  height: 300px;
+  margin-top: 2%;
+  /* Set a fixed height for the container */
+}
+
+.line-graph-overlay {
+  position: absolute;
+  /* Position the graph relative to the container */
+  bottom: -40%;
+  /* Align the graph to the bottom */
+  /* Align the graph to the left */
+  width: 100%;
+  /* Make the graph span the full width of the container */
+  height: 100%;
+  /* Make the graph span the full height of the container */
+  pointer-events: none;
+  /* Ensure the overlay doesn't block interactions */
+}
+
+.time-chart-container {
+  position: relative;
+  /* Make the container a positioning context */
+  width: 100%;
+  height: 300px;
+  margin: 5%;
+  /* Set a fixed height for the container */
+}
+
+.row-container {
+  display: flex;
+  align-items: right;
+  /* Default spacing between all items */
+  width: 100%;
+  padding: 1%;
+  box-sizing: border-box;
+}
+
+.row-item {
+  margin-inline-start: 1%;
+}
+
+.row-item.dropdown-group {
+  margin-inline-end: 3%;
+  /* Reduced spacing for dropdown components */
+}
+
+.row-item.date-group {
+  margin-inline-start: 25%;
+  /* Reduced spacing for date components */
+}
+
+.custom-datepicker-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
