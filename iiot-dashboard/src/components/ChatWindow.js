@@ -50,7 +50,7 @@ const ChatWindow = ({ isOpen, isDarkMode, shiftId, assetId, startTime, endTime }
   return (
     <div className={`chat-window ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="chat-header">
-        <h3>Chat</h3>
+        <h3>Apolo</h3>
       </div>
       <div className="chat-messages" ref={chatContainerRef}>
         {messages.map((message, index) => (
